@@ -1,3 +1,270 @@
 @tailwind base;
-    @tailwind components;
-    @tailwind utilities;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    overflow-x: hidden;
+    width: 100%;
+    min-width: 320px;
+    touch-action: manipulation;
+  }
+  /* Crucial mobile iOS fix: font-size 16px on mobile prevents unwanted Safari auto-zoom */
+  input, textarea, select {
+    font-size: 16px;
+  }
+  @media (min-width: 640px) {
+    input, textarea, select {
+      font-size: 0.875rem;
+    }
+  }
+}
+
+/* iOS Safe Area Utilities */
+.safe-pb {
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
+}
+.safe-pt {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/* Custom delicate scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f0eb;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Shimmer animation for luxury gold accents */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pageEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.995);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.05); }
+}
+
+@keyframes spinVerySlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes slideLeft {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.animate-pageEnter {
+  animation: pageEnter 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-float {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-spinSlow {
+  animation: spinVerySlow 40s linear infinite;
+}
+
+.animate-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+.animate-shimmer::after {
+  position: absolute;
+  top: 0; right: 0; bottom: 0; left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0,
+    rgba(255, 255, 255, 0.2) 20%,
+    rgba(255, 255, 255, 0.5) 60%,
+    rgba(255, 255, 255, 0)
+  );
+  animation: shimmer 2.5s infinite;
+  content: '';
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-slideLeft {
+  animation: slideLeft 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out forwards;
+}
+
+.animate-scaleUp {
+  animation: scaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Luxury Vedic Background Patterns */
+.bg-vedic-pattern {
+  background-color: #FAF8F5;
+  background-image: radial-gradient(#1e3a2b 0.65px, transparent 0.65px), radial-gradient(#d97706 0.65px, #FAF8F5 0.65px);
+  background-size: 26px 26px;
+  background-position: 0 0, 13px 13px;
+  background-opacity: 0.04;
+}
+
+.bg-gold-radial {
+  background: radial-gradient(circle at 50% 30%, rgba(217, 119, 6, 0.12) 0%, rgba(250, 248, 245, 0) 70%);
+}
+
+/* Hide scrollbar for clean horizontal category pills */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Marquee/Ticker Animation (like gircowcare.org Janmashtami notice) */
+@keyframes marqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marqueeScroll 28s linear infinite;
+  display: inline-flex;
+  white-space: nowrap;
+  will-change: transform;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Product card premium hover effect */
+.product-card-hover {
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+.product-card-hover:hover {
+  box-shadow: 0 8px 40px -8px rgba(31, 78, 55, 0.22), 0 2px 8px rgba(0,0,0,0.06);
+  transform: translateY(-3px);
+}
+
+/* Category tile glow on hover */
+.category-tile:hover {
+  box-shadow: 0 4px 24px -4px rgba(217, 119, 6, 0.35);
+}
+
+/* Vedic Om pattern subtle background */
+.bg-vedic-subtle {
+  background-color: #FFFDF7;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d97706' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+/* Trust badge shimmer line */
+.trust-badge {
+  position: relative;
+  overflow: hidden;
+}
+.trust-badge::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(217, 119, 6, 0.5), transparent);
+  animation: shimmer 3s infinite;
+}
+
+/* Smooth image reveal on hover */
+.img-zoom {
+  transition: transform 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.group:hover .img-zoom {
+  transform: scale(1.08);
+}
+
+/* Glow ring on active category pill */
+.cat-pill-active {
+  box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.25), inset 0 1px 0 rgba(255,255,255,0.1);
+}
+
+/* Nature leaf watermark - CSS only */
+.bg-leaf-watermark {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpath d='M50 5 C20 5 5 30 5 50 C5 75 25 95 50 95 C75 95 95 75 95 50 C95 30 80 5 50 5 Z M50 15 C70 15 85 30 85 50 C85 70 70 85 50 85 C30 85 15 70 15 50 C15 30 30 15 50 15Z' fill='%231e3a2b' fill-opacity='0.04'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 120%;
+}
+
+/* Scrolling announcement bar inspired by gircowcare */
+.announcement-bar {
+  background: linear-gradient(90deg, #143D24 0%, #1a4d2e 50%, #143D24 100%);
+  overflow: hidden;
+  position: relative;
+}
+.announcement-bar::before,
+.announcement-bar::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 60px;
+  z-index: 2;
+  pointer-events: none;
+}
+.announcement-bar::before {
+  left: 0;
+  background: linear-gradient(to right, #143D24, transparent);
+}
+.announcement-bar::after {
+  right: 0;
+  background: linear-gradient(to left, #143D24, transparent);
+}
