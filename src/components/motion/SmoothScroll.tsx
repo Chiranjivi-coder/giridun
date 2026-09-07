@@ -2,7 +2,6 @@
 
 import { useEffect } from "react";
 import Lenis from "lenis";
-import "lenis/dist/lenis.css";
 import { gsap, registerGsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
 
 export function SmoothScroll() {

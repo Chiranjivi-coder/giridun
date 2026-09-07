@@ -121,7 +121,7 @@ export function CinematicHero() {
                 src={slide.src}
                 alt={slide.alt}
                 fill
-                priority={i === 0}
+                priority={i < 2}
                 className="object-cover object-center"
                 sizes="100vw"
               />
