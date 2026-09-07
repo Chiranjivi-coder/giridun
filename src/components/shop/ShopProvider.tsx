@@ -1,9 +1,11 @@
 "use client";
 
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, useContext, useMemo, useSyncExternalStore, type ReactNode } from "react";
 import { getProduct, products } from "@/data/products";
 
 type CartItem = { id: string; qty: number };
+
+type ShopSnap = { cart: CartItem[]; saved: string[] };
 
 type Shop = {
   cart: CartItem[];
@@ -22,33 +24,66 @@ const ShopContext = createContext<Shop | null>(null);
 
 const CART_KEY = "giridhan-cart";
 const SAVED_KEY = "giridhan-saved";
+const CHANGE = "giridhan-shop-change";
+const empty: ShopSnap = { cart: [], saved: [] };
+
+let memory: ShopSnap = empty;
+let hydrated = false;
+
+function readJson<T>(key: string, fallback: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function hydrate() {
+  if (hydrated || typeof window === "undefined") return;
+  memory = {
+    cart: readJson<CartItem[]>(CART_KEY, []),
+    saved: readJson<string[]>(SAVED_KEY, []),
+  };
+  hydrated = true;
+}
+
+function write(next: ShopSnap) {
+  memory = next;
+  localStorage.setItem(CART_KEY, JSON.stringify(next.cart));
+  localStorage.setItem(SAVED_KEY, JSON.stringify(next.saved));
+  window.dispatchEvent(new Event(CHANGE));
+}
+
+function subscribe(onChange: () => void) {
+  hydrate();
+  const onStorage = () => {
+    memory = {
+      cart: readJson<CartItem[]>(CART_KEY, []),
+      saved: readJson<string[]>(SAVED_KEY, []),
+    };
+    onChange();
+  };
+  window.addEventListener(CHANGE, onChange);
+  window.addEventListener("storage", onStorage);
+  return () => {
+    window.removeEventListener(CHANGE, onChange);
+    window.removeEventListener("storage", onStorage);
+  };
+}
+
+function getSnapshot() {
+  hydrate();
+  return memory;
+}
+
+function getServerSnapshot() {
+  return empty;
+}
 
 export function ShopProvider({ children }: { children: ReactNode }) {
-  const [cart, setCart] = useState<CartItem[]>([]);
-  const [saved, setSaved] = useState<string[]>([]);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    try {
-      const c = localStorage.getItem(CART_KEY);
-      const s = localStorage.getItem(SAVED_KEY);
-      if (c) setCart(JSON.parse(c));
-      if (s) setSaved(JSON.parse(s));
-    } catch {
-      /* ignore */
-    }
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
-  }, [cart, ready]);
-
-  useEffect(() => {
-    if (!ready) return;
-    localStorage.setItem(SAVED_KEY, JSON.stringify(saved));
-  }, [saved, ready]);
+  const snap = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const { cart, saved } = snap;
 
   const value = useMemo<Shop>(() => {
     const cartCount = cart.reduce((n, i) => n + i.qty, 0);
@@ -64,22 +99,33 @@ export function ShopProvider({ children }: { children: ReactNode }) {
       cartTotal,
       addToBag: (id, qty = 1) => {
         if (!products.some((p) => p.id === id)) return;
-        setCart((prev) => {
-          const found = prev.find((i) => i.id === id);
-          if (found) return prev.map((i) => (i.id === id ? { ...i, qty: i.qty + qty } : i));
-          return [...prev, { id, qty }];
+        const found = memory.cart.find((i) => i.id === id);
+        write({
+          ...memory,
+          cart: found
+            ? memory.cart.map((i) => (i.id === id ? { ...i, qty: i.qty + qty } : i))
+            : [...memory.cart, { id, qty }],
         });
       },
       setQty: (id, qty) => {
-        setCart((prev) =>
-          qty < 1 ? prev.filter((i) => i.id !== id) : prev.map((i) => (i.id === id ? { ...i, qty } : i))
-        );
+        write({
+          ...memory,
+          cart:
+            qty < 1
+              ? memory.cart.filter((i) => i.id !== id)
+              : memory.cart.map((i) => (i.id === id ? { ...i, qty } : i)),
+        });
       },
-      removeFromBag: (id) => setCart((prev) => prev.filter((i) => i.id !== id)),
+      removeFromBag: (id) => write({ ...memory, cart: memory.cart.filter((i) => i.id !== id) }),
       toggleSaved: (id) =>
-        setSaved((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id])),
+        write({
+          ...memory,
+          saved: memory.saved.includes(id)
+            ? memory.saved.filter((x) => x !== id)
+            : [...memory.saved, id],
+        }),
       isSaved: (id) => saved.includes(id),
-      clearBag: () => setCart([]),
+      clearBag: () => write({ ...memory, cart: [] }),
     };
   }, [cart, saved]);
 

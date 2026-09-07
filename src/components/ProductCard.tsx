@@ -2,15 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { useShop } from "@/components/shop/ShopProvider";
 import { type Product } from "@/data/products";
 
 export function ProductCard({ product }: { product: Product }) {
   const { addToBag, toggleSaved, isSaved } = useShop();
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  const saved = mounted && isSaved(product.id);
+  const saved = isSaved(product.id);
 
   return (
     <article className="group overflow-hidden rounded-2xl border border-forest/10 bg-white shadow-sm transition duration-500 hover:-translate-y-1 hover:shadow-lg">

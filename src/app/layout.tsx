@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Outfit } from "next/font/google";
 import "./globals.css";
 import { MotionRoot } from "@/components/motion/MotionRoot";
+import { FirebaseAnalytics } from "@/components/FirebaseAnalytics";
 import { site } from "@/data/site";
 
 const outfit = Outfit({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${outfit.variable} ${cormorant.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-cream text-ink">
+        <FirebaseAnalytics />
         <MotionRoot>{children}</MotionRoot>
       </body>
     </html>

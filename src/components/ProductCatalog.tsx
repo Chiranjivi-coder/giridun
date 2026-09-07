@@ -1,13 +1,22 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProductCard } from "@/components/ProductCard";
 import { categories, products, type CategoryId } from "@/data/products";
 
 export function ProductCatalog({ initialCat = "all" }: { initialCat?: CategoryId }) {
+  const searchParams = useSearchParams();
   const [cat, setCat] = useState<CategoryId>(
     categories.some((c) => c.id === initialCat) ? initialCat : "all"
   );
+
+  useEffect(() => {
+    const catParam = searchParams.get("cat");
+    if (catParam && categories.some((c) => c.id === catParam)) {
+      setCat(catParam as CategoryId);
+    }
+  }, [searchParams]);
 
   const filtered = useMemo(
     () => (cat === "all" ? products : products.filter((p) => p.category === cat)),
