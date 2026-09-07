@@ -53,32 +53,29 @@ function processSegments(dir, relPath = "") {
 
         fs.mkdirSync(targetDir, { recursive: true });
 
-        // Copy _tree.segment.rsc -> targetDir/__next._tree.txt
-        const treeRsc = path.join(fullPath, "_tree.segment.rsc");
-        if (fs.existsSync(treeRsc)) {
-          fs.copyFileSync(treeRsc, path.join(targetDir, "__next._tree.txt"));
-        }
-
-        // Copy _full.segment.rsc -> targetDir/__next._full.txt
-        const fullRsc = path.join(fullPath, "_full.segment.rsc");
-        if (fs.existsSync(fullRsc)) {
-          fs.copyFileSync(fullRsc, path.join(targetDir, "__next._full.txt"));
-        }
-
-        // Copy any *.segment.rsc files to __next.<name>.txt
-        function copySubSegments(sDir) {
+        // Recursively copy all *.segment.rsc files to their exact Next.js 16 naming pattern
+        function copyAllSegments(sDir, baseRel = "") {
           const sEntries = fs.readdirSync(sDir, { withFileTypes: true });
           for (const sEntry of sEntries) {
             const sFull = path.join(sDir, sEntry.name);
+            const itemRel = baseRel ? `${baseRel}/${sEntry.name}` : sEntry.name;
             if (sEntry.isDirectory()) {
-              copySubSegments(sFull);
+              copyAllSegments(sFull, itemRel);
             } else if (sEntry.name.endsWith(".segment.rsc")) {
-              const segName = sEntry.name.slice(0, -".segment.rsc".length);
-              fs.copyFileSync(sFull, path.join(targetDir, `__next.${segName}.txt`));
+              const cleanRel = itemRel.replace(/\\/g, "/").replace(/\.segment\.rsc$/, "");
+              const fileName = "__next." + cleanRel.replace(/\//g, ".") + ".txt";
+              fs.copyFileSync(sFull, path.join(targetDir, fileName));
+
+              // Also copy short fallback name if nested (e.g. __next.__PAGE__.txt)
+              const baseSegName = sEntry.name.slice(0, -".segment.rsc".length);
+              const fallbackName = `__next.${baseSegName}.txt`;
+              if (fallbackName !== fileName) {
+                fs.copyFileSync(sFull, path.join(targetDir, fallbackName));
+              }
             }
           }
         }
-        copySubSegments(fullPath);
+        copyAllSegments(fullPath);
 
         // Also ensure <route>.txt and <route>/index.txt exist from <route>.rsc if present
         const rscFile = path.join(dir, `${routeName}.rsc`);
