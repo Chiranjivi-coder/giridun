@@ -1,11 +1,11 @@
 import { PageHero, CtaLink } from "@/components/PageHero";
 import { GoshalaGallery } from "@/components/GoshalaGallery";
-import { site } from "@/data/site";
+import { GoshalaVideoSection } from "@/components/GoshalaVideoSection";
 
 export const metadata = {
   title: "Goshala Experience Gallery | Giridhan Organics",
   description:
-    "Photo gallery of our Ahimsa Goshala Sanctuary in Dhawda, Bhokardan, caring for 75+ indigenous Gir and Sahiwal cows, natural farming, and handcrafted Gomay crafts.",
+    "Photo and live video gallery of our Ahimsa Goshala Sanctuary in Dhawda, Bhokardan, caring for 75+ indigenous Gir and Sahiwal cows, natural farming, and handcrafted Gomay crafts.",
 };
 
 export default function GalleryPage() {
@@ -22,6 +22,16 @@ export default function GalleryPage() {
           title="Ahimsa Goshala & Indigenous Cow Darshan"
           subtitle="Real, authentic glimpses from our farm and sanctuary in Dhawda, Bhokardan Dist. Jalna (Maharashtra)."
         />
+      </section>
+
+      {/* LIVE GOSHALA VIDEO DARSHAN (FORMATTED BY RESOLUTION) */}
+      <section id="video-gallery" className="bg-sand/30 border-y border-forest/10">
+        <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
+          <GoshalaVideoSection
+            title="Live Sanctuary Video Darshan"
+            subtitle="Watch authentic live moments from our sanctuary in Dhawda, Bhokardan — presented in true 9:16 mobile story reel and 16:9 cinematic widescreen resolutions."
+          />
+        </div>
       </section>
 
       {/* VISIT US SECTION */}
