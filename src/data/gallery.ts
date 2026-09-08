@@ -147,13 +147,13 @@ export interface GalleryVideo {
 export const GOSHALA_VIDEOS: GalleryVideo[] = [
   {
     id: "goshala-darshan-reel",
-    title: "Gau Seva & Goshala Life Reel",
-    subtitle: "Vertical Reel • 9:16 Portrait (720×1280) • 31s",
+    title: "Gau Seva & Goshala Life",
+    subtitle: "Walking Darshan • 31s",
     category: "Goshala Sanctuary Darshan",
     src: "/goshala_videos/goshala-darshan-reel-vertical.mp4",
     originalSrc: "/goshala_videos/WhatsApp Video 2026-09-07 at 9.39.14 AM.mp4",
     poster: "/goshala_images/goshala-young-gir-calf-portrait.jpg",
-    desc: "A live vertical walking darshan through our Ahimsa sanctuary in Dhawda, Bhokardan, meeting the cows, calves, and experiencing selfless Goseva up close.",
+    desc: "A live walking darshan through our Ahimsa sanctuary in Dhawda, Bhokardan, meeting the cows, calves, and experiencing selfless Goseva up close.",
     width: 720,
     height: 1280,
     aspect: "9:16",
@@ -163,7 +163,7 @@ export const GOSHALA_VIDEOS: GalleryVideo[] = [
   {
     id: "goshala-peaceful-herd-video",
     title: "Tranquil Indigenous Herd Darshan",
-    subtitle: "Widescreen Cinematic • 16:9 Landscape (848×478) • 13s",
+    subtitle: "Sanctuary Herd Darshan • 13s",
     category: "Indigenous Cow Herd",
     src: "/goshala_videos/goshala-peaceful-herd-landscape.mp4",
     originalSrc: "/goshala_videos/WhatsApp Video 2026-09-07 at 9.39.15 AM.mp4",

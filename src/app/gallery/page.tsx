@@ -24,12 +24,12 @@ export default function GalleryPage() {
         />
       </section>
 
-      {/* LIVE GOSHALA VIDEO DARSHAN (FORMATTED BY RESOLUTION) */}
+      {/* LIVE GOSHALA VIDEO DARSHAN */}
       <section id="video-gallery" className="bg-sand/30 border-y border-forest/10">
         <div className="mx-auto max-w-7xl px-4 py-8 md:px-6">
           <GoshalaVideoSection
             title="Live Sanctuary Video Darshan"
-            subtitle="Watch authentic live moments from our sanctuary in Dhawda, Bhokardan — presented in true 9:16 mobile story reel and 16:9 cinematic widescreen resolutions."
+            subtitle="Watch authentic live moments from our peaceful sanctuary in Dhawda, Bhokardan, caring for 75+ indigenous Gir and Sahiwal cows."
           />
         </div>
       </section>

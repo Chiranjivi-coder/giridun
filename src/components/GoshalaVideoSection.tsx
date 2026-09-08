@@ -10,7 +10,7 @@ interface GoshalaVideoSectionProps {
 
 export function GoshalaVideoSection({
   title = "Live Goshala Video Darshan",
-  subtitle = "Experience our sanctuary in motion — filmed live at Dhawda, Bhokardan. Formatted specifically in natural 9:16 vertical story reel and 16:9 widescreen cinematic resolutions.",
+  subtitle = "Experience our sanctuary in motion — filmed live at our Ahimsa sanctuary in Dhawda, Bhokardan.",
 }: GoshalaVideoSectionProps) {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
@@ -54,21 +54,11 @@ export function GoshalaVideoSection({
       {/* Grid: 9:16 Reel on Left/Center + 16:9 Cinematic on Right/Center */}
       <div className="mx-auto max-w-6xl px-4 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* ============================================================ */}
-        {/* 1. VERTICAL REEL VIDEO (9:16 - 720×1280) */}
+        {/* 1. VERTICAL REEL VIDEO (9:16) */}
         {/* ============================================================ */}
         {verticalVideo && (
           <div className="lg:col-span-5 flex flex-col items-center">
             <div className="w-full max-w-[360px] mx-auto">
-              {/* Device Frame Header */}
-              <div className="mb-2 flex items-center justify-between text-xs text-muted px-1">
-                <span className="font-semibold text-forest flex items-center gap-1">
-                  <span>📱</span> Vertical Reel
-                </span>
-                <span className="rounded-full bg-sand/80 px-2 py-0.5 text-[11px] font-mono text-forest/80 border border-forest/10">
-                  {verticalVideo.width}×{verticalVideo.height} • 9:16
-                </span>
-              </div>
-
               {/* Reel Card Container (Fixed 9:16 ratio) */}
               <div className="relative aspect-[9/16] w-full overflow-hidden rounded-[2.25rem] bg-stone-950 shadow-2xl ring-4 ring-forest/10">
                 <video
@@ -129,7 +119,7 @@ export function GoshalaVideoSection({
                 <p className="text-xs text-muted mt-1 leading-relaxed">{verticalVideo.desc}</p>
                 <div className="mt-2.5 flex items-center justify-between text-[11px] text-muted border-t border-forest/10 pt-2">
                   <span>Filmed at Bhokardan Goshala</span>
-                  <span className="font-semibold text-leaf">HD 720p Mobile View</span>
+                  <span className="font-semibold text-leaf">Ahimsa Sanctuary</span>
                 </div>
               </div>
             </div>
@@ -137,21 +127,11 @@ export function GoshalaVideoSection({
         )}
 
         {/* ============================================================ */}
-        {/* 2. HORIZONTAL WIDESCREEN VIDEO (16:9 - 848×478) */}
+        {/* 2. HORIZONTAL WIDESCREEN VIDEO */}
         {/* ============================================================ */}
         {horizontalVideo && (
           <div className="lg:col-span-7 flex flex-col justify-center space-y-4">
             <div>
-              {/* Header Pill */}
-              <div className="mb-2 flex items-center justify-between text-xs text-muted px-1">
-                <span className="font-semibold text-forest flex items-center gap-1">
-                  <span>🎬</span> Widescreen Cinematic
-                </span>
-                <span className="rounded-full bg-sand/80 px-2 py-0.5 text-[11px] font-mono text-forest/80 border border-forest/10">
-                  {horizontalVideo.width}×{horizontalVideo.height} • 16:9
-                </span>
-              </div>
-
               {/* 16:9 Video Frame */}
               <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl bg-stone-950 shadow-2xl ring-4 ring-forest/10">
                 <video
@@ -193,7 +173,7 @@ export function GoshalaVideoSection({
                     {/* Bottom Info */}
                     <div className="w-full text-white">
                       <p className="text-xs font-semibold uppercase tracking-wider text-lime">
-                        Duration: {horizontalVideo.duration} • 16:9 Landscape
+                        Duration: {horizontalVideo.duration}
                       </p>
                       <h3 className="font-serif text-lg md:text-xl font-bold leading-tight mt-0.5">
                         {horizontalVideo.title}
