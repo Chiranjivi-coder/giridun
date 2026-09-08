@@ -3,7 +3,7 @@ import Link from "next/link";
 import { BannerFrame } from "@/components/BannerFrame";
 import { ProductCard } from "@/components/ProductCard";
 import { CtaLink } from "@/components/PageHero";
-import { GoshalaGallery } from "@/components/GoshalaGallery";
+import { GoshalaMarquee } from "@/components/GoshalaMarquee";
 import { CinematicHero } from "@/components/motion/CinematicHero";
 import { ColorStretch } from "@/components/motion/ColorStretch";
 import { JourneyReel } from "@/components/motion/JourneyReel";
@@ -224,17 +224,18 @@ export default function HomePage() {
 
       <JourneyReel />
 
-      <section className="mx-auto max-w-7xl px-4 py-14 md:py-24 md:px-6">
-        <GoshalaGallery
+      <section className="py-12 md:py-20 overflow-hidden bg-sand/20 border-y border-forest/10">
+        <GoshalaMarquee
+          kicker="Ahimsa Sanctuary Stream"
           title="Experience Giridhan Goshala & Sanctuary"
-          subtitle="Real glimpses of our 75+ indigenous cows, young calves, pure nutrition, and Ahimsa Goseva in Dhawda, Bhokardan."
+          subtitle="Real, continuous glimpses of our 75+ indigenous Gir & Sahiwal cows, young calves, and selfless Goseva in Dhawda, Bhokardan."
         />
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-4 px-4">
           <Link
             href="/gallery"
             className="inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-cream shadow-md transition hover:bg-leaf active:scale-95"
           >
-            <span>Explore Full Experience Gallery</span>
+            <span>Explore Full Gallery & Videos</span>
             <span>→</span>
           </Link>
           <a

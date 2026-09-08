@@ -1,5 +1,6 @@
 import { PageHero, CtaLink } from "@/components/PageHero";
 import { GoshalaGallery } from "@/components/GoshalaGallery";
+import { GoshalaMarquee } from "@/components/GoshalaMarquee";
 import { GoshalaVideoSection } from "@/components/GoshalaVideoSection";
 
 export const metadata = {
@@ -16,6 +17,15 @@ export default function GalleryPage() {
         title="The Giridhan Experience Gallery"
         text="Witness our sacred Ahimsa goshala sanctuary, indigenous Gir and Sahiwal cows, natural calf nutrition, and handcrafted cow-based products in action."
       />
+
+      {/* CONTINUOUS MARQUEE STREAM */}
+      <div className="border-b border-forest/10 bg-sand/20">
+        <GoshalaMarquee
+          kicker="Continuous Stream"
+          title="Sacred Goshala Moments in Motion"
+          subtitle="Glide through authentic daily moments of our 75+ indigenous Gir and Sahiwal cows. Tap any card for high-resolution darshan."
+        />
+      </div>
 
       <section className="mx-auto max-w-7xl px-4 py-14 md:py-20 md:px-6">
         <GoshalaGallery
