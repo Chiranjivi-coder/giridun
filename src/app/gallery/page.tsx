@@ -22,7 +22,7 @@ export default function GalleryPage() {
       <div className="border-b border-forest/10 bg-sand/20">
         <GoshalaMarquee
           kicker="Continuous Stream"
-          title="Sacred Goshala Moments in Motion"
+          title="Sacred Goshala Moments"
           subtitle="Glide through authentic daily moments of our 75+ indigenous Gir and Sahiwal cows. Tap any card for high-resolution darshan."
         />
       </div>

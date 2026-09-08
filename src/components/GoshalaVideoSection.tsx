@@ -10,7 +10,7 @@ interface GoshalaVideoSectionProps {
 
 export function GoshalaVideoSection({
   title = "Live Goshala Video Darshan",
-  subtitle = "Experience our sanctuary in motion — filmed live at our Ahimsa sanctuary in Dhawda, Bhokardan.",
+  subtitle = "Experience our sanctuary life — filmed live at our Ahimsa sanctuary in Dhawda, Bhokardan.",
 }: GoshalaVideoSectionProps) {
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
 
@@ -45,7 +45,7 @@ export function GoshalaVideoSection({
       <div className="mb-10 text-center max-w-3xl mx-auto px-4">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-forest/10 px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-forest border border-forest/15">
           <span className="h-2 w-2 rounded-full bg-leaf animate-pulse" />
-          Live Motion Darshan
+          Live Sanctuary Darshan
         </span>
         <h2 className="mt-3 font-serif text-3xl md:text-4xl text-forest">{title}</h2>
         <p className="mt-2.5 text-sm md:text-base text-muted leading-relaxed">{subtitle}</p>

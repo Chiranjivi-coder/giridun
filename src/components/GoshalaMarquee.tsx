@@ -78,7 +78,7 @@ function GoshalaCard({
 
 export function GoshalaMarquee({
   className,
-  kicker = "Sacred Moments In Motion",
+  kicker = "Sacred Goshala Moments",
   title = "Continuous Goshala Darshan Stream",
   subtitle = "Glide through real, heartwarming moments of our 75+ indigenous Gir and Sahiwal cows. Tap any image to view in high resolution.",
 }: GoshalaMarqueeProps) {
