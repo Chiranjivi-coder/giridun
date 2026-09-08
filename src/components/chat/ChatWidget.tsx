@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useShop } from "@/components/shop/ShopProvider";
-import { site } from "@/data/site";
+import { getProduct } from "@/data/products";
 import { CHAT_QUICK_QUERIES } from "@/data/chatbotKnowledge";
 import {
   sendStreamingMessage,
@@ -22,7 +22,7 @@ const WELCOME_MESSAGE: ChatMessage = {
 
 I am your AI assistant, powered by the complete knowledge of our **Ahimsa Goshala, indigenous cows, and 40+ natural sustainable products**.
 
-You can ask me anything about our products, ingredients, traditional benefits, or **order directly right here in the chat!**`,
+You can ask me anything about our products, ingredients, or traditional benefits. When I show products, simply tap **"+ Add to Bag"** to select what you want, and **order directly through WhatsApp** from your bag below!`,
   timestamp: Date.now(),
 };
 
@@ -34,8 +34,9 @@ export function ChatWidget() {
   const [addedIds, setAddedIds] = useState<Record<string, boolean>>({});
   const [quantities, setQuantities] = useState<Record<string, number>>({});
   const [showTooltip, setShowTooltip] = useState(true);
+  const [isBagOpen, setIsBagOpen] = useState(false);
 
-  const { addToBag, cartCount } = useShop();
+  const { cart, cartTotal, cartCount, addToBag, setQty, removeFromBag, clearBag } = useShop();
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -51,7 +52,7 @@ export function ChatWidget() {
     }
   }, [isOpen, messages]);
 
-  // Handle quantity changes for in-chat order cards
+  // Handle quantity changes for in-chat product cards
   const updateItemQty = (productId: string, delta: number, defaultQty: number) => {
     setQuantities((prev) => {
       const current = prev[productId] !== undefined ? prev[productId] : defaultQty;
@@ -69,39 +70,24 @@ export function ChatWidget() {
     const qty = getItemQty(item.product.id, item.qty);
     addToBag(item.product.id, qty);
     setAddedIds((prev) => ({ ...prev, [item.product.id]: true }));
+    setIsBagOpen(true); // Automatically expand the bag review panel so the user sees their updated bag!
     setTimeout(() => {
       setAddedIds((prev) => ({ ...prev, [item.product.id]: false }));
     }, 2500);
   };
 
-  // Add all items in an order block to Bag
-  const handleAddAllToBag = (items: ParsedActionItem[]) => {
-    items.forEach((item) => {
-      const qty = getItemQty(item.product.id, item.qty);
-      addToBag(item.product.id, qty);
-      setAddedIds((prev) => ({ ...prev, [item.product.id]: true }));
-    });
-    setTimeout(() => {
-      setAddedIds({});
-    }, 2500);
-  };
-
-  // WhatsApp direct order URL for specific items
-  const generateWhatsAppOrderUrl = (items: ParsedActionItem[]) => {
-    const lines = items.map((item) => {
-      const qty = getItemQty(item.product.id, item.qty);
-      const subtotal = item.product.price * qty;
-      return `• ${item.product.name} × ${qty} — ₹${subtotal}`;
-    });
-    const total = items.reduce((sum, item) => {
-      const qty = getItemQty(item.product.id, item.qty);
-      return sum + item.product.price * qty;
-    }, 0);
+  // Generate WhatsApp order URL for ACTUAL items added to bag
+  const getWhatsAppCartOrderUrl = () => {
+    const lines = cart
+      .map((item) => {
+        const p = getProduct(item.id);
+        return p ? `• ${p.name} × ${item.qty} — ₹${p.price * item.qty}` : "";
+      })
+      .filter(Boolean)
+      .join("\n");
 
     const text = encodeURIComponent(
-      `Namaste Giridhan Organics, I want to place an order via AI Assistant:\n\n${lines.join(
-        "\n"
-      )}\n\n*Total Amount:* ₹${total}\n\nPlease confirm availability and payment details.`
+      `Namaste Giridhan Organics, I want to place an order from my bag via AI Chatbot:\n\n${lines}\n\n*Total Amount:* ₹${cartTotal}\n\nPlease confirm availability and payment details.`
     );
     return `https://wa.me/917559228525?text=${text}`;
   };
@@ -221,6 +207,11 @@ export function ChatWidget() {
                 <path d="M9.5 9h.01M14.5 9h.01" strokeWidth="2.6" />
                 <path d="M9.5 13a3.5 3.5 0 0 0 5 0" />
               </svg>
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-lime text-forest text-[10px] font-bold shadow-md">
+                  {cartCount}
+                </span>
+              )}
             </>
           )}
         </button>
@@ -249,7 +240,7 @@ export function ChatWidget() {
                 </div>
                 <div className="mt-1 flex items-center gap-1.5 text-[11px] text-cream/75">
                   <span className="h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
-                  <span>Online • Quick Answers & Orders</span>
+                  <span>Online • Instant Answers & Orders</span>
                 </div>
               </div>
             </div>
@@ -285,7 +276,7 @@ export function ChatWidget() {
             </div>
           </div>
 
-          {/* QUICK QUERY CHIPS BAR (Horizontally scrollable with data-lenis-prevent) */}
+          {/* QUICK QUERY CHIPS BAR */}
           <div
             data-lenis-prevent
             className="flex items-center gap-2 overflow-x-auto bg-white/85 px-3 py-2 border-b border-forest/10 scrollbar-none shrink-0 touch-pan-x"
@@ -307,7 +298,7 @@ export function ChatWidget() {
             ))}
           </div>
 
-          {/* MESSAGES CONTAINER (Vertically scrollable with data-lenis-prevent) */}
+          {/* MESSAGES CONTAINER */}
           <div
             data-lenis-prevent
             className="flex-1 overflow-y-auto p-4 space-y-4 text-sm leading-relaxed overscroll-contain touch-pan-y"
@@ -417,33 +408,33 @@ export function ChatWidget() {
                     ) : null}
                   </div>
 
-                  {/* INTERACTIVE ORDER / PRODUCT CARDS */}
+                  {/* PRODUCTS LIST (User can browse and click "+ Add to Bag") */}
                   {!isUser && items.length > 0 && (
-                    <div className="mt-3 w-full max-w-[94%] rounded-2xl bg-white p-3.5 border-2 border-leaf/30 shadow-md">
+                    <div className="mt-3 w-full max-w-[94%] rounded-2xl bg-white p-3 border border-forest/15 shadow-sm">
                       <div className="flex items-center justify-between pb-2 border-b border-forest/10">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-base">🛍️</span>
-                          <span className="font-semibold text-xs text-forest uppercase tracking-wider">
-                            Order Assistant
+                          <span className="text-sm">🌿</span>
+                          <span className="font-semibold text-xs text-forest">
+                            Products ({items.length})
                           </span>
                         </div>
-                        <span className="text-xs text-muted">
-                          {items.length} item{items.length === 1 ? "" : "s"}
+                        <span className="text-[11px] text-muted">
+                          Tap &quot;+ Add to Bag&quot; to choose
                         </span>
                       </div>
 
-                      <div className="mt-2.5 space-y-2.5">
+                      <div className="mt-2.5 space-y-2">
                         {items.map((item) => {
                           const currentQty = getItemQty(item.product.id, item.qty);
-                          const isAdded = !!addedIds[item.product.id];
-                          const subtotal = item.product.price * currentQty;
+                          const inBagItem = cart.find((c) => c.id === item.product.id);
+                          const isAddedJustNow = !!addedIds[item.product.id];
 
                           return (
                             <div
                               key={item.product.id}
-                              className="flex items-center gap-3 rounded-xl bg-sand/40 p-2 border border-forest/5"
+                              className="flex items-center gap-2.5 rounded-xl bg-sand/30 p-2 border border-forest/5"
                             >
-                              <div className="relative h-14 w-14 rounded-lg bg-white p-1 overflow-hidden shrink-0 border border-forest/10">
+                              <div className="relative h-12 w-12 rounded-lg bg-white p-1 overflow-hidden shrink-0 border border-forest/10">
                                 <Image
                                   src={item.product.image}
                                   alt={item.product.name}
@@ -457,93 +448,60 @@ export function ChatWidget() {
                                   {item.product.name}
                                 </h4>
                                 <p className="text-xs text-muted">
-                                  ₹{item.product.price} each ·{" "}
-                                  <strong className="text-forest">₹{subtotal}</strong>
-                                </p>
-
-                                {/* Quantity selector */}
-                                <div className="mt-1 flex items-center gap-2">
-                                  <div className="inline-flex items-center rounded-lg bg-white border border-forest/15 text-xs">
-                                    <button
-                                      type="button"
-                                      className="px-2 py-0.5 text-muted hover:text-forest"
-                                      onClick={() => updateItemQty(item.product.id, -1, item.qty)}
-                                    >
-                                      −
-                                    </button>
-                                    <span className="w-5 text-center font-medium">
-                                      {currentQty}
+                                  ₹{item.product.price}
+                                  {inBagItem && (
+                                    <span className="ml-1.5 text-[10px] font-semibold text-leaf bg-leaf/10 px-1.5 py-0.5 rounded-full">
+                                      {inBagItem.qty} in bag
                                     </span>
-                                    <button
-                                      type="button"
-                                      className="px-2 py-0.5 text-muted hover:text-forest"
-                                      onClick={() => updateItemQty(item.product.id, 1, item.qty)}
-                                    >
-                                      +
-                                    </button>
-                                  </div>
+                                  )}
+                                </p>
+                              </div>
 
+                              {/* Quantity selector & Add to Bag */}
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <div className="inline-flex items-center rounded-lg bg-white border border-forest/15 text-xs">
                                   <button
                                     type="button"
-                                    onClick={() => handleAddToBag(item)}
-                                    className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
-                                      isAdded
-                                        ? "bg-leaf text-white"
-                                        : "bg-forest text-cream hover:bg-leaf"
-                                    }`}
+                                    className="px-1.5 py-0.5 text-muted hover:text-forest"
+                                    onClick={() => updateItemQty(item.product.id, -1, item.qty)}
+                                    aria-label="Decrease quantity"
                                   >
-                                    {isAdded ? "✓ Added" : "+ Add to Bag"}
+                                    −
+                                  </button>
+                                  <span className="w-4 text-center font-medium">
+                                    {currentQty}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="px-1.5 py-0.5 text-muted hover:text-forest"
+                                    onClick={() => updateItemQty(item.product.id, 1, item.qty)}
+                                    aria-label="Increase quantity"
+                                  >
+                                    +
                                   </button>
                                 </div>
+
+                                <button
+                                  type="button"
+                                  onClick={() => handleAddToBag(item)}
+                                  className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition shadow-2xs ${
+                                    isAddedJustNow
+                                      ? "bg-leaf text-white"
+                                      : inBagItem
+                                        ? "bg-sand/80 text-forest border border-forest/20 hover:bg-forest hover:text-cream"
+                                        : "bg-forest text-cream hover:bg-leaf"
+                                  }`}
+                                >
+                                  {isAddedJustNow
+                                    ? "✓ Added!"
+                                    : inBagItem
+                                      ? "+ Add More"
+                                      : "+ Add to Bag"}
+                                </button>
                               </div>
                             </div>
                           );
                         })}
-                      </div>
-
-                      {/* Summary & Combined Actions */}
-                      <div className="mt-3 pt-2.5 border-t border-forest/10 flex flex-col gap-2">
-                        <div className="flex items-center justify-between text-xs font-semibold text-forest">
-                          <span>Total Calculated:</span>
-                          <span className="text-sm">
-                            ₹
-                            {items.reduce((sum, i) => {
-                              const q = getItemQty(i.product.id, i.qty);
-                              return sum + i.product.price * q;
-                            }, 0)}
-                          </span>
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleAddAllToBag(items)}
-                            className="flex items-center justify-center gap-1 rounded-xl bg-forest px-3 py-2 text-xs font-medium text-cream hover:bg-leaf transition active:scale-95 shadow-sm"
-                          >
-                            <span>🛒</span>
-                            <span>Add All to Bag</span>
-                          </button>
-
-                          <a
-                            href={generateWhatsAppOrderUrl(items)}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="flex items-center justify-center gap-1 rounded-xl bg-[#25D366] px-3 py-2 text-xs font-semibold text-white hover:opacity-90 transition active:scale-95 shadow-sm"
-                          >
-                            <span>📲</span>
-                            <span>Order via WhatsApp</span>
-                          </a>
-                        </div>
-
-                        {cartCount > 0 && (
-                          <Link
-                            href="/bag"
-                            onClick={() => setIsOpen(false)}
-                            className="mt-1 text-center text-xs text-leaf font-medium underline underline-offset-2 hover:text-forest"
-                          >
-                            View Cart ({cartCount} item{cartCount === 1 ? "" : "s"}) →
-                          </Link>
-                        )}
                       </div>
                     </div>
                   )}
@@ -552,6 +510,141 @@ export function ChatWidget() {
             })}
             <div ref={messagesEndRef} />
           </div>
+
+          {/* DEDICATED ACTIVE BAG / ORDER DRAWER (Shows ONLY what was added to bag!) */}
+          {cartCount > 0 && (
+            <div data-lenis-prevent className="border-t border-forest/15 bg-white/95 shrink-0">
+              {isBagOpen ? (
+                /* EXPANDED BAG PANEL */
+                <div className="p-3.5 max-h-56 overflow-y-auto space-y-2.5">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-forest/10">
+                    <div className="flex items-center gap-1.5 font-semibold text-xs text-forest">
+                      <span>🛒</span>
+                      <span>Your Added Bag ({cartCount} item{cartCount > 1 ? "s" : ""})</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsBagOpen(false)}
+                      className="text-[11px] text-muted hover:text-forest flex items-center gap-0.5"
+                    >
+                      <span>Hide</span>
+                      <span>▼</span>
+                    </button>
+                  </div>
+
+                  {/* List of items currently in the bag */}
+                  <div className="space-y-2">
+                    {cart.map((cartItem) => {
+                      const p = getProduct(cartItem.id);
+                      if (!p) return null;
+                      const subtotal = p.price * cartItem.qty;
+
+                      return (
+                        <div
+                          key={cartItem.id}
+                          className="flex items-center justify-between gap-2 bg-sand/30 rounded-xl p-2 border border-forest/10"
+                        >
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="relative h-10 w-10 rounded-lg bg-white overflow-hidden shrink-0 border border-forest/10">
+                              <Image src={p.image} alt={p.name} fill className="object-contain p-0.5" />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-medium text-forest truncate">{p.name}</p>
+                              <p className="text-[11px] text-muted">
+                                ₹{p.price} × {cartItem.qty} = <strong className="text-forest">₹{subtotal}</strong>
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <div className="inline-flex items-center rounded-md border border-forest/15 bg-white text-xs">
+                              <button
+                                type="button"
+                                className="px-1.5 py-0.5 text-muted hover:text-forest"
+                                onClick={() => setQty(cartItem.id, cartItem.qty - 1)}
+                              >
+                                −
+                              </button>
+                              <span className="w-4 text-center font-medium">{cartItem.qty}</span>
+                              <button
+                                type="button"
+                                className="px-1.5 py-0.5 text-muted hover:text-forest"
+                                onClick={() => setQty(cartItem.id, cartItem.qty + 1)}
+                              >
+                                +
+                              </button>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => removeFromBag(cartItem.id)}
+                              title="Remove item"
+                              className="text-muted/60 hover:text-red-600 p-1 text-xs"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  {/* Bag Actions & WhatsApp Order */}
+                  <div className="pt-2 border-t border-forest/10 flex items-center justify-between gap-2">
+                    <div>
+                      <span className="text-[11px] text-muted block">Bag Total</span>
+                      <span className="text-sm font-bold text-forest">₹{cartTotal}</span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={clearBag}
+                        className="text-[11px] text-muted hover:text-red-600 underline"
+                      >
+                        Clear
+                      </button>
+
+                      <a
+                        href={getWhatsAppCartOrderUrl()}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-1.5 rounded-xl bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white shadow-sm hover:opacity-95 active:scale-95 transition"
+                      >
+                        <span>📲</span>
+                        <span>Order via WhatsApp</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                /* COLLAPSED BAG BAR */
+                <div className="px-3.5 py-2 flex items-center justify-between text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setIsBagOpen(true)}
+                    className="flex items-center gap-2 font-medium text-forest hover:text-leaf"
+                  >
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-forest text-cream text-[10px] font-bold">
+                      {cartCount}
+                    </span>
+                    <span>Your Bag: <strong className="font-bold">₹{cartTotal}</strong></span>
+                    <span className="text-leaf text-[11px] underline">Review Items ▲</span>
+                  </button>
+
+                  <a
+                    href={getWhatsAppCartOrderUrl()}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-1.5 rounded-full bg-[#25D366] px-3.5 py-1.5 text-xs font-bold text-white shadow-xs hover:opacity-95 active:scale-95 transition"
+                  >
+                    <span>📲</span>
+                    <span>Order on WhatsApp</span>
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* INPUT FORM */}
           <div className="bg-white p-3 border-t border-forest/10 shrink-0">
@@ -585,7 +678,17 @@ export function ChatWidget() {
             </form>
             <div className="mt-2 flex items-center justify-between px-2 text-[10px] text-muted">
               <span>Giridhan AI · Groq 20B</span>
-              <span className="text-leaf">Orders fulfilled via Goshala Team</span>
+              {cartCount > 0 ? (
+                <Link
+                  href="/bag"
+                  onClick={() => setIsOpen(false)}
+                  className="text-leaf font-medium underline hover:text-forest"
+                >
+                  View Full Cart Page ({cartCount}) →
+                </Link>
+              ) : (
+                <span className="text-leaf">Orders fulfilled via Goshala Team</span>
+              )}
             </div>
           </div>
         </div>
