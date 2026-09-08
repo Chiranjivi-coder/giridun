@@ -12,6 +12,8 @@ import {
   type ChatMessage,
   type ParsedActionItem,
 } from "@/lib/groqChat";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome-msg",
@@ -335,17 +337,84 @@ export function ChatWidget() {
                         : "bg-white text-ink border border-forest/10 rounded-bl-none"
                     }`}
                   >
-                    {/* Render text with basic markdown formatting */}
-                    <div className="whitespace-pre-wrap break-words space-y-2">
-                      {cleanText || (isGenerating && !isUser ? (
-                        <div className="flex items-center gap-1.5 py-1 text-muted">
-                          <span className="h-2 w-2 rounded-full bg-leaf animate-bounce" />
-                          <span className="h-2 w-2 rounded-full bg-leaf animate-bounce [animation-delay:0.2s]" />
-                          <span className="h-2 w-2 rounded-full bg-leaf animate-bounce [animation-delay:0.4s]" />
-                          <span className="ml-1 text-xs text-muted">Thinking...</span>
-                        </div>
-                      ) : null)}
-                    </div>
+                    {cleanText ? (
+                      <div className="break-words leading-relaxed">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            p: ({ children }) => (
+                              <p className="mb-2 last:mb-0 leading-relaxed text-sm">{children}</p>
+                            ),
+                            strong: ({ children }) => (
+                              <strong className={`font-semibold ${isUser ? "text-cream" : "text-forest"}`}>
+                                {children}
+                              </strong>
+                            ),
+                            h1: ({ children }) => (
+                              <h3 className={`font-serif text-base font-semibold mt-2.5 mb-1 ${isUser ? "text-cream" : "text-forest"}`}>
+                                {children}
+                              </h3>
+                            ),
+                            h2: ({ children }) => (
+                              <h4 className={`font-serif text-sm font-semibold mt-2 mb-1 ${isUser ? "text-cream" : "text-forest"}`}>
+                                {children}
+                              </h4>
+                            ),
+                            h3: ({ children }) => (
+                              <h5 className={`font-serif text-xs font-semibold uppercase tracking-wider mt-2 mb-1 ${isUser ? "text-cream" : "text-leaf"}`}>
+                                {children}
+                              </h5>
+                            ),
+                            ul: ({ children }) => (
+                              <ul className="list-disc pl-4 space-y-1 my-2 text-xs md:text-sm">{children}</ul>
+                            ),
+                            ol: ({ children }) => (
+                              <ol className="list-decimal pl-4 space-y-1 my-2 text-xs md:text-sm">{children}</ol>
+                            ),
+                            li: ({ children }) => (
+                              <li className="leading-snug">{children}</li>
+                            ),
+                            table: ({ children }) => (
+                              <div className="my-2.5 max-w-full overflow-x-auto rounded-xl border border-forest/15 bg-sand/30 shadow-2xs">
+                                <table className="min-w-full text-xs divide-y divide-forest/10">{children}</table>
+                              </div>
+                            ),
+                            thead: ({ children }) => (
+                              <thead className="bg-sand/70">{children}</thead>
+                            ),
+                            th: ({ children }) => (
+                              <th className="px-2.5 py-1.5 text-left font-semibold text-forest text-[11px] uppercase tracking-wider">
+                                {children}
+                              </th>
+                            ),
+                            td: ({ children }) => (
+                              <td className="px-2.5 py-1.5 border-t border-forest/5 text-ink text-xs">
+                                {children}
+                              </td>
+                            ),
+                            a: ({ href, children }) => (
+                              <a
+                                href={href}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-leaf font-medium underline underline-offset-2 hover:text-forest"
+                              >
+                                {children}
+                              </a>
+                            ),
+                          }}
+                        >
+                          {cleanText}
+                        </ReactMarkdown>
+                      </div>
+                    ) : isGenerating && !isUser ? (
+                      <div className="flex items-center gap-1.5 py-1 text-muted">
+                        <span className="h-2 w-2 rounded-full bg-leaf animate-bounce" />
+                        <span className="h-2 w-2 rounded-full bg-leaf animate-bounce [animation-delay:0.2s]" />
+                        <span className="h-2 w-2 rounded-full bg-leaf animate-bounce [animation-delay:0.4s]" />
+                        <span className="ml-1 text-xs text-muted">Thinking...</span>
+                      </div>
+                    ) : null}
                   </div>
 
                   {/* INTERACTIVE ORDER / PRODUCT CARDS */}
