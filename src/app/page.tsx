@@ -3,6 +3,7 @@ import Link from "next/link";
 import { BannerFrame } from "@/components/BannerFrame";
 import { ProductCard } from "@/components/ProductCard";
 import { CtaLink } from "@/components/PageHero";
+import { GoshalaGallery } from "@/components/GoshalaGallery";
 import { CinematicHero } from "@/components/motion/CinematicHero";
 import { ColorStretch } from "@/components/motion/ColorStretch";
 import { JourneyReel } from "@/components/motion/JourneyReel";
@@ -224,44 +225,27 @@ export default function HomePage() {
       <JourneyReel />
 
       <section className="mx-auto max-w-7xl px-4 py-14 md:py-24 md:px-6">
-        <p className="text-xs uppercase tracking-[0.28em] text-leaf">Gallery</p>
-        <h2 data-split="words" className="mt-2 font-serif text-4xl text-forest">
-          Experience Giridhan
-        </h2>
-        <div className="mt-8 grid gap-5 md:grid-cols-2">
-          {galleryBanners.map((g) => (
-            <figure
-              key={g.label}
-              data-reveal
-              className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-forest/10"
-            >
-              <BannerFrame src={g.src} alt={g.label} className="rounded-none" />
-              <figcaption className="px-4 py-3 text-sm font-medium text-forest">
-                {g.label}
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-        <div className="mt-5 grid grid-cols-2 gap-4 lg:grid-cols-4">
-          {galleryMoments.map((g) => (
-            <figure
-              key={g.label}
-              data-reveal
-              className="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-forest/10"
-            >
-              <div className="bg-sand/40 p-3">
-                <Image
-                  src={g.src}
-                  alt={g.label}
-                  width={g.width}
-                  height={g.height}
-                  className="h-auto w-full rounded-xl"
-                  sizes="(max-width: 1024px) 50vw, 25vw"
-                />
-              </div>
-              <figcaption className="px-4 py-3 text-sm font-medium text-forest">{g.label}</figcaption>
-            </figure>
-          ))}
+        <GoshalaGallery
+          title="Experience Giridhan Goshala & Sanctuary"
+          subtitle="Real glimpses of our 75+ indigenous cows, young calves, pure nutrition, and Ahimsa Goseva in Dhawda, Bhokardan."
+        />
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+          <Link
+            href="/gallery"
+            className="inline-flex items-center gap-2 rounded-full bg-forest px-6 py-3 text-sm font-semibold text-cream shadow-md transition hover:bg-leaf active:scale-95"
+          >
+            <span>Explore Full Experience Gallery</span>
+            <span>→</span>
+          </Link>
+          <a
+            href="https://wa.me/917559228525?text=Hello%20Giridhan,%20I%20would%20like%20to%20visit%20your%20Goshala%20Sanctuary."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full border border-forest/20 bg-white px-6 py-3 text-sm font-semibold text-forest shadow-2xs transition hover:bg-sand/60 active:scale-95"
+          >
+            <span>Schedule Goshala Darshan</span>
+            <span>🐄</span>
+          </a>
         </div>
       </section>
 

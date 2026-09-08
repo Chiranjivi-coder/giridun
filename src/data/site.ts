@@ -23,6 +23,7 @@ export const nav = [
   { href: "/gifting", label: "Sustainable Gifting" },
   { href: "/impact", label: "Our Impact" },
   { href: "/international", label: "International" },
+  { href: "/gallery", label: "Gallery" },
   { href: "/blog", label: "Blog" },
   { href: "/contact", label: "Contact" },
 ];

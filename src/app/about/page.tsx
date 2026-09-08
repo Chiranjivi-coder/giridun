@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BannerFrame } from "@/components/BannerFrame";
 import { PageHero, CtaLink } from "@/components/PageHero";
 import { site } from "@/data/site";
@@ -32,6 +33,15 @@ export default function AboutPage() {
             committed to this cause. Our farming is now completely based on cow dung and cow urine,
             which has significantly enhanced the quality of our grains.
           </p>
+          <div className="mt-6 flex items-center gap-3">
+            <Link
+              href="/gallery"
+              className="inline-flex items-center gap-2 rounded-full bg-forest px-5 py-2.5 text-xs font-semibold text-cream shadow-sm transition hover:bg-leaf active:scale-95"
+            >
+              <span>Explore Goshala Photo Gallery</span>
+              <span>→</span>
+            </Link>
+          </div>
         </div>
       </section>
 
