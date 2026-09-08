@@ -12,6 +12,7 @@ import {
   type ChatMessage,
   type ParsedActionItem,
 } from "@/lib/groqChat";
+import { streamLocalBackupResponse } from "@/lib/localBackupChat";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -135,24 +136,65 @@ export function ChatWidget() {
         () => {
           setIsGenerating(false);
         },
-        (err) => {
-          console.error("Chat streaming error:", err);
-          setMessages((prev) =>
-            prev.map((m) =>
-              m.id === assistantPlaceholderId
-                ? {
-                    ...m,
-                    content:
-                      "Namaste! 🙏 I apologize, I encountered a brief connection issue. Please feel free to retry or connect with us directly on WhatsApp at +91 75592 28525.",
-                  }
-                : m
-            )
-          );
-          setIsGenerating(false);
+        async (err) => {
+          console.warn("Chat streaming error, activating intelligent local backup:", err);
+          try {
+            await streamLocalBackupResponse(
+              text,
+              newHistory,
+              (_delta, accumulated) => {
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.id === assistantPlaceholderId ? { ...m, content: accumulated } : m
+                  )
+                );
+              }
+            );
+          } catch {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantPlaceholderId
+                  ? {
+                      ...m,
+                      content:
+                        "**Namaste! 🙏**\n\nThank you for reaching out to Giridhan Organics. Here are some of our sacred essentials you can explore:\n\nTap **+ Add to Bag** below to add to your order, or reach us on WhatsApp at +91 75592 28525!\n\n[PRODUCT:ghee-diya] [PRODUCT:gomay-dhoop] [PRODUCT:dantamanjan]",
+                    }
+                  : m
+              )
+            );
+          } finally {
+            setIsGenerating(false);
+          }
         }
       );
     } catch {
-      setIsGenerating(false);
+      try {
+        await streamLocalBackupResponse(
+          text,
+          newHistory,
+          (_delta, accumulated) => {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === assistantPlaceholderId ? { ...m, content: accumulated } : m
+              )
+            );
+          }
+        );
+      } catch {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantPlaceholderId
+              ? {
+                  ...m,
+                  content:
+                    "**Namaste! 🙏**\n\nThank you for reaching out to Giridhan Organics. Here are some of our sacred essentials you can explore:\n\nTap **+ Add to Bag** below to add to your order, or reach us on WhatsApp at +91 75592 28525!\n\n[PRODUCT:ghee-diya] [PRODUCT:gomay-dhoop] [PRODUCT:dantamanjan]",
+                }
+              : m
+          )
+        );
+      } finally {
+        setIsGenerating(false);
+      }
     }
   };
 

@@ -15,23 +15,84 @@ export interface ParsedActionItem {
   qty: number;
 }
 
+import { streamLocalBackupResponse } from "./localBackupChat";
+
 const GROQ_API_KEY = process.env.NEXT_PUBLIC_GROQ_API_KEY || "";
 
 let groqClientInstance: Groq | null = null;
 
-function getGroqClient(): Groq {
+function getGroqClient(): Groq | null {
   if (!GROQ_API_KEY) {
-    throw new Error(
-      "Missing Groq API Key. Please set NEXT_PUBLIC_GROQ_API_KEY in .env.local"
-    );
+    return null;
   }
   if (!groqClientInstance) {
-    groqClientInstance = new Groq({
-      apiKey: GROQ_API_KEY,
-      dangerouslyAllowBrowser: true,
-    });
+    try {
+      groqClientInstance = new Groq({
+        apiKey: GROQ_API_KEY,
+        dangerouslyAllowBrowser: true,
+      });
+    } catch (e) {
+      console.warn("Failed to initialize Groq client:", e);
+      return null;
+    }
   }
   return groqClientInstance;
+}
+
+/**
+ * 6-TIER RESILIENT CASCADE ARCHITECTURE (per specification diagram):
+ * 
+ * [User asks a question]
+ *       │
+ *       ▼
+ * [Tier 1: openai/gpt-oss-20b] ──(Success)───────────────┐
+ *       │ (Error / Rate Limit / Timeout)                 │
+ *       ▼                                                │
+ * [Tier 2: groq/compound] ───────(Success)───────────────┤
+ *       │ (Error / Rate Limit / Timeout)                 │
+ *       ▼                                                │
+ * [Tier 3: groq/compound-mini] ──(Success)───────────────┤
+ *       │ (Error / Rate Limit / Timeout)                 │
+ *       ▼                                                │
+ * [Tier 4: openai/gpt-oss-120b] ─(Success)───────────────┤
+ *       │ (Error / Rate Limit / Timeout)                 │
+ *       ▼                                                │
+ * [Tier 5: qwen/qwen3.6-27b] ────(Success)───────────────┤
+ *       │ (Network Loss / API Outage)                    │
+ *       ▼                                                │
+ * [Tier 6: Local Offline Knowledge Engine] ──(Success)───┤
+ *                                                        ▼
+ *                                         [Stream Clean Answer to Chatbot]
+ */
+
+interface TierConfig {
+  tierNumber: number;
+  model: string;
+  name: string;
+  timeoutMs: number;
+}
+
+const AI_TIERS: TierConfig[] = [
+  { tierNumber: 1, model: "openai/gpt-oss-20b", name: "Tier 1: openai/gpt-oss-20b", timeoutMs: 8000 },
+  { tierNumber: 2, model: "groq/compound", name: "Tier 2: groq/compound", timeoutMs: 8000 },
+  { tierNumber: 3, model: "groq/compound-mini", name: "Tier 3: groq/compound-mini", timeoutMs: 8000 },
+  { tierNumber: 4, model: "openai/gpt-oss-120b", name: "Tier 4: openai/gpt-oss-120b", timeoutMs: 9000 },
+  { tierNumber: 5, model: "qwen/qwen3.6-27b", name: "Tier 5: qwen/qwen3.6-27b", timeoutMs: 9000 },
+];
+
+/**
+ * Filters out internal thinking/reasoning tags ensuring only clean text streams to the user.
+ */
+function cleanStreamChunk(rawText: string): string {
+  // Remove closed <think>...</think> blocks
+  let clean = rawText.replace(/<think>[\s\S]*?<\/think>/gi, "");
+  // If unclosed <think> is in progress, strip from <think> to end
+  if (clean.includes("<think>")) {
+    clean = clean.replace(/<think>[\s\S]*$/gi, "");
+  }
+  // Strip compound model reasoning markers
+  clean = clean.replace(/\*\*Reasoning\*\*[\s\S]*?(?=\*\*Final|\*\*Chosen|Answer:|$)/gi, "");
+  return clean.trimStart();
 }
 
 export async function sendStreamingMessage(
@@ -40,68 +101,108 @@ export async function sendStreamingMessage(
   onFinish?: (fullText: string) => void,
   onError?: (err: Error) => void
 ): Promise<string> {
-  try {
-    const groq = getGroqClient();
+  const lastUserMsg = [...conversation].reverse().find((m) => m.role === "user");
+  const query = lastUserMsg?.content || "";
 
-    const systemPrompt = buildSystemPrompt();
+  const groq = getGroqClient();
 
-    // Prepare message history for Groq
-    const groqMessages = [
-      { role: "system" as const, content: systemPrompt },
-      ...conversation.map((m) => ({
-        role: m.role as "user" | "assistant" | "system",
-        content: m.content,
-      })),
-    ];
+  // If no Groq client / API key, proceed directly to Tier 6: Local Offline Knowledge Engine
+  if (!groq) {
+    console.info("[Tier 6: Local Offline Knowledge Engine] Groq client not configured; activating local offline engine.");
+    return await streamLocalBackupResponse(query, conversation, onChunk, onFinish);
+  }
 
-    let fullResponse = "";
+  const systemPrompt = buildSystemPrompt();
 
+  // Prepare message history for Groq
+  const groqMessages = [
+    { role: "system" as const, content: systemPrompt },
+    ...conversation.map((m) => ({
+      role: m.role as "user" | "assistant" | "system",
+      content: m.content,
+    })),
+  ];
+
+  let fullCleanResponse = "";
+  let success = false;
+
+  // Execute Tier 1 through Tier 5 Cascade
+  for (const tier of AI_TIERS) {
     try {
-      const chatCompletion = await groq.chat.completions.create({
+      console.info(`[Cascade] Attempting ${tier.name}...`);
+
+      let timeoutId: NodeJS.Timeout;
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(`${tier.name} timed out after ${tier.timeoutMs}ms`));
+        }, tier.timeoutMs);
+      });
+
+      const completionPromise = groq.chat.completions.create({
         messages: groqMessages,
-        model: "openai/gpt-oss-20b",
+        model: tier.model,
         temperature: 0.7,
         max_completion_tokens: 2048,
         top_p: 1,
         stream: true,
       });
+
+      const chatCompletion = await Promise.race([completionPromise, timeoutPromise]);
+      clearTimeout(timeoutId!);
+
+      let rawAccumulated = "";
+      let previousCleanLength = 0;
+      let streamedAnyCleanChunk = false;
 
       for await (const chunk of chatCompletion) {
         const delta = chunk.choices[0]?.delta?.content || "";
         if (delta) {
-          fullResponse += delta;
-          onChunk(delta, fullResponse);
+          rawAccumulated += delta;
+          const currentClean = cleanStreamChunk(rawAccumulated);
+
+          // If there is new clean content after stripping think/reasoning tags
+          if (currentClean.length > previousCleanLength) {
+            const cleanDelta = currentClean.slice(previousCleanLength);
+            previousCleanLength = currentClean.length;
+            fullCleanResponse = currentClean;
+            streamedAnyCleanChunk = true;
+            onChunk(cleanDelta, fullCleanResponse);
+          }
         }
       }
-    } catch (modelErr) {
-      console.warn("Primary model error, attempting fallback to llama-3.3-70b-versatile:", modelErr);
-      const fallbackCompletion = await groq.chat.completions.create({
-        messages: groqMessages,
-        model: "llama-3.3-70b-versatile",
-        temperature: 0.7,
-        max_completion_tokens: 2048,
-        top_p: 1,
-        stream: true,
-      });
 
-      for await (const chunk of fallbackCompletion) {
-        const delta = chunk.choices[0]?.delta?.content || "";
-        if (delta) {
-          fullResponse += delta;
-          onChunk(delta, fullResponse);
-        }
+      if (streamedAnyCleanChunk && fullCleanResponse.trim().length > 0) {
+        console.info(`[Cascade] ${tier.name} succeeded. Streaming clean answer to chatbot.`);
+        success = true;
+        break; // Clean answer successfully delivered!
       }
+    } catch (tierErr: any) {
+      console.warn(`[Cascade] ${tier.name} failed (Error/Rate Limit/Timeout):`, tierErr?.message || tierErr);
+      // If clean answer was already being streamed to the user, do not restart with another model
+      if (fullCleanResponse.trim().length > 10) {
+        success = true;
+        break;
+      }
+      // Otherwise smoothly cascade to the next tier
     }
-
-    if (onFinish) {
-      onFinish(fullResponse);
-    }
-    return fullResponse;
-  } catch (err: any) {
-    console.error("Groq chat error:", err);
-    if (onError) onError(err);
-    throw err;
   }
+
+  // Tier 6: Local Offline Knowledge Engine (invoked on Network Loss, API Outage, or all AI tiers exhausted)
+  if (!success || !fullCleanResponse.trim()) {
+    console.warn("[Cascade] All remote AI tiers failed or timed out. Activating [Tier 6: Local Offline Knowledge Engine].");
+    try {
+      return await streamLocalBackupResponse(query, conversation, onChunk, onFinish);
+    } catch (backupErr: any) {
+      console.error("[Cascade] Tier 6 error:", backupErr);
+      if (onError) onError(backupErr);
+      throw backupErr;
+    }
+  }
+
+  if (onFinish) {
+    onFinish(fullCleanResponse);
+  }
+  return fullCleanResponse;
 }
 
 /**
