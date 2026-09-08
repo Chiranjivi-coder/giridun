@@ -70,7 +70,7 @@ export function ChatWidget() {
     const qty = getItemQty(item.product.id, item.qty);
     addToBag(item.product.id, qty);
     setAddedIds((prev) => ({ ...prev, [item.product.id]: true }));
-    setIsBagOpen(true); // Automatically expand the bag review panel so the user sees their updated bag!
+    setIsBagOpen(true);
     setTimeout(() => {
       setAddedIds((prev) => ({ ...prev, [item.product.id]: false }));
     }, 2500);
@@ -217,23 +217,23 @@ export function ChatWidget() {
         </button>
       </div>
 
-      {/* CHAT MODAL WINDOW */}
+      {/* CHAT MODAL WINDOW (Full-screen sheet on mobile, rounded floating panel on desktop) */}
       {isOpen && (
         <div
           data-lenis-prevent
-          className="fixed inset-0 z-[80] md:inset-auto md:bottom-5 md:right-5 md:w-[420px] md:max-w-[calc(100vw-2.5rem)] h-[100dvh] md:h-[620px] md:max-h-[calc(100dvh-3rem)] flex flex-col rounded-none md:rounded-3xl bg-[#fbf9f4] md:border md:border-forest/15 shadow-[0_20px_50px_rgba(22,56,43,0.3)] overflow-hidden overscroll-contain"
+          className="fixed inset-0 z-[100] md:inset-auto md:bottom-5 md:right-5 md:w-[430px] md:max-w-[calc(100vw-2.5rem)] w-full h-[100dvh] md:h-[640px] md:max-h-[calc(100dvh-2.5rem)] flex flex-col bg-[#fbf9f4] md:rounded-3xl md:border md:border-forest/15 shadow-[0_20px_60px_rgba(22,56,43,0.35)] overflow-hidden overscroll-contain"
         >
           {/* HEADER */}
-          <div className="flex items-center justify-between bg-forest px-4 py-3.5 text-cream shrink-0 border-b border-forest/20">
+          <div className="flex items-center justify-between bg-forest px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 text-cream shrink-0 border-b border-forest/20 shadow-xs">
             <div className="flex items-center gap-3">
               <div className="relative h-9 w-9 rounded-full bg-[#f6f3ea] p-1 overflow-hidden shrink-0 border border-lime/40">
                 <Image src="/logo.png" alt="Giridhan" fill className="object-contain p-0.5" />
               </div>
               <div>
-                <h3 className="font-serif text-base font-semibold leading-none">
+                <h3 className="font-serif text-base font-semibold leading-none text-cream">
                   Giridhan AI
                 </h3>
-                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-cream/75">
+                <div className="mt-1 flex items-center gap-1.5 text-[11px] text-cream/80">
                   <span className="h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
                   <span>Online • Instant Answers & Orders</span>
                 </div>
@@ -246,7 +246,7 @@ export function ChatWidget() {
                 onClick={handleResetChat}
                 title="Reset conversation"
                 aria-label="Reset conversation"
-                className="rounded-full p-2 text-cream/70 hover:bg-cream/10 hover:text-cream transition"
+                className="rounded-full p-2 text-cream/70 hover:bg-cream/10 hover:text-cream transition active:scale-95"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
@@ -261,9 +261,9 @@ export function ChatWidget() {
                 onClick={() => setIsOpen(false)}
                 title="Close chat"
                 aria-label="Close chat"
-                className="rounded-full p-2 text-cream/70 hover:bg-cream/10 hover:text-cream transition"
+                className="rounded-full p-2 text-cream/70 hover:bg-cream/10 hover:text-cream transition active:scale-95"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18" />
                   <line x1="6" y1="6" x2="18" y2="18" />
                 </svg>
@@ -274,7 +274,7 @@ export function ChatWidget() {
           {/* QUICK QUERY CHIPS BAR */}
           <div
             data-lenis-prevent
-            className="flex items-center gap-2 overflow-x-auto bg-white/85 px-3 py-2 border-b border-forest/10 scrollbar-none shrink-0 touch-pan-x"
+            className="flex items-center gap-2 overflow-x-auto bg-white/90 px-3 py-2 border-b border-forest/10 scrollbar-none shrink-0 touch-pan-x"
             style={{ WebkitOverflowScrolling: "touch" }}
           >
             <span className="text-[10px] uppercase font-bold tracking-wider text-muted shrink-0">
@@ -286,7 +286,7 @@ export function ChatWidget() {
                 type="button"
                 disabled={isGenerating}
                 onClick={() => handleSendMessage(q.query)}
-                className="shrink-0 rounded-full border border-forest/15 bg-white px-3 py-1 text-xs text-forest hover:border-leaf hover:bg-sand/60 transition active:scale-95 disabled:opacity-50 shadow-2xs"
+                className="shrink-0 rounded-full border border-forest/15 bg-white px-3 py-1.5 text-xs text-forest hover:border-leaf hover:bg-sand/60 transition active:scale-95 disabled:opacity-50 shadow-2xs font-medium"
               >
                 {q.label}
               </button>
@@ -296,7 +296,7 @@ export function ChatWidget() {
           {/* MESSAGES CONTAINER */}
           <div
             data-lenis-prevent
-            className="flex-1 overflow-y-auto p-4 space-y-4 text-sm leading-relaxed overscroll-contain touch-pan-y"
+            className="flex-1 overflow-y-auto p-3.5 md:p-4 space-y-4 text-sm leading-relaxed overscroll-contain touch-pan-y"
             style={{ WebkitOverflowScrolling: "touch" }}
           >
             {messages.map((msg) => {
@@ -317,7 +317,7 @@ export function ChatWidget() {
 
                   {/* Message Bubble */}
                   <div
-                    className={`max-w-[88%] rounded-2xl p-3.5 shadow-sm ${
+                    className={`max-w-[92%] md:max-w-[88%] rounded-2xl p-3.5 shadow-sm ${
                       isUser
                         ? "bg-forest text-cream rounded-br-none"
                         : "bg-white text-ink border border-forest/10 rounded-bl-none"
@@ -403,9 +403,9 @@ export function ChatWidget() {
                     ) : null}
                   </div>
 
-                  {/* PRODUCTS LIST (User can browse and click "+ Add to Bag") */}
+                  {/* PRODUCTS LIST (Mobile-Optimized Responsive Cards without truncation) */}
                   {!isUser && items.length > 0 && (
-                    <div className="mt-3 w-full max-w-[94%] rounded-2xl bg-white p-3 border border-forest/15 shadow-sm">
+                    <div className="mt-3 w-full max-w-[96%] md:max-w-[92%] rounded-2xl bg-white p-3 border border-forest/15 shadow-sm">
                       <div className="flex items-center justify-between pb-2 border-b border-forest/10">
                         <div className="flex items-center gap-1.5">
                           <span className="text-sm">🌿</span>
@@ -418,7 +418,7 @@ export function ChatWidget() {
                         </span>
                       </div>
 
-                      <div className="mt-2.5 space-y-2">
+                      <div className="mt-2.5 space-y-2.5">
                         {items.map((item) => {
                           const currentQty = getItemQty(item.product.id, item.qty);
                           const inBagItem = cart.find((c) => c.id === item.product.id);
@@ -427,48 +427,53 @@ export function ChatWidget() {
                           return (
                             <div
                               key={item.product.id}
-                              className="flex items-center gap-2.5 rounded-xl bg-sand/30 p-2 border border-forest/5"
+                              className="rounded-xl bg-sand/30 p-2.5 border border-forest/10 shadow-2xs"
                             >
-                              <div className="relative h-12 w-12 rounded-lg bg-white p-1 overflow-hidden shrink-0 border border-forest/10">
-                                <Image
-                                  src={item.product.image}
-                                  alt={item.product.name}
-                                  fill
-                                  className="object-contain"
-                                />
-                              </div>
+                              {/* Top Row: Thumbnail + Full Name + Price */}
+                              <div className="flex items-start gap-2.5">
+                                <div className="relative h-12 w-12 rounded-lg bg-white p-1 overflow-hidden shrink-0 border border-forest/10">
+                                  <Image
+                                    src={item.product.image}
+                                    alt={item.product.name}
+                                    fill
+                                    className="object-contain"
+                                  />
+                                </div>
 
-                              <div className="min-w-0 flex-1">
-                                <h4 className="font-medium text-xs text-forest truncate">
-                                  {item.product.name}
-                                </h4>
-                                <p className="text-xs text-muted">
-                                  ₹{item.product.price}
-                                  {inBagItem && (
-                                    <span className="ml-1.5 text-[10px] font-semibold text-leaf bg-leaf/10 px-1.5 py-0.5 rounded-full">
-                                      {inBagItem.qty} in bag
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="font-medium text-xs text-forest leading-snug break-words">
+                                    {item.product.name}
+                                  </h4>
+                                  <div className="mt-0.5 flex items-center gap-2">
+                                    <span className="text-xs font-semibold text-forest">
+                                      ₹{item.product.price}
                                     </span>
-                                  )}
-                                </p>
+                                    {inBagItem && (
+                                      <span className="text-[10px] font-semibold text-leaf bg-leaf/10 px-1.5 py-0.2 rounded-full">
+                                        {inBagItem.qty} in bag
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
                               </div>
 
-                              {/* Quantity selector & Add to Bag */}
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <div className="inline-flex items-center rounded-lg bg-white border border-forest/15 text-xs">
+                              {/* Bottom Row: Stepper + Add to Bag Button */}
+                              <div className="mt-2 pt-2 border-t border-forest/10 flex items-center justify-between gap-2">
+                                <div className="inline-flex items-center rounded-lg bg-white border border-forest/15 text-xs shadow-2xs">
                                   <button
                                     type="button"
-                                    className="px-1.5 py-0.5 text-muted hover:text-forest"
+                                    className="px-2.5 py-1 text-muted hover:text-forest active:bg-sand/60 font-bold"
                                     onClick={() => updateItemQty(item.product.id, -1, item.qty)}
                                     aria-label="Decrease quantity"
                                   >
                                     −
                                   </button>
-                                  <span className="w-4 text-center font-medium">
+                                  <span className="w-5 text-center font-semibold text-forest">
                                     {currentQty}
                                   </span>
                                   <button
                                     type="button"
-                                    className="px-1.5 py-0.5 text-muted hover:text-forest"
+                                    className="px-2.5 py-1 text-muted hover:text-forest active:bg-sand/60 font-bold"
                                     onClick={() => updateItemQty(item.product.id, 1, item.qty)}
                                     aria-label="Increase quantity"
                                   >
@@ -479,16 +484,16 @@ export function ChatWidget() {
                                 <button
                                   type="button"
                                   onClick={() => handleAddToBag(item)}
-                                  className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition shadow-2xs ${
+                                  className={`flex-1 flex items-center justify-center gap-1 rounded-lg py-1.5 px-3 text-xs font-semibold transition active:scale-95 shadow-2xs ${
                                     isAddedJustNow
                                       ? "bg-leaf text-white"
                                       : inBagItem
-                                        ? "bg-sand/80 text-forest border border-forest/20 hover:bg-forest hover:text-cream"
+                                        ? "bg-sand text-forest border border-forest/20 hover:bg-forest hover:text-cream"
                                         : "bg-forest text-cream hover:bg-leaf"
                                   }`}
                                 >
                                   {isAddedJustNow
-                                    ? "✓ Added!"
+                                    ? "✓ Added to Bag!"
                                     : inBagItem
                                       ? "+ Add More"
                                       : "+ Add to Bag"}
@@ -506,12 +511,12 @@ export function ChatWidget() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* DEDICATED ACTIVE BAG / ORDER DRAWER (Shows ONLY what was added to bag!) */}
+          {/* ACTIVE BAG / ORDER DRAWER (Displays real items added to bag) */}
           {cartCount > 0 && (
-            <div data-lenis-prevent className="border-t border-forest/15 bg-white/95 shrink-0">
+            <div data-lenis-prevent className="border-t border-forest/15 bg-white/95 shrink-0 shadow-[0_-4px_16px_rgba(22,56,43,0.06)]">
               {isBagOpen ? (
                 /* EXPANDED BAG PANEL */
-                <div className="p-3.5 max-h-56 overflow-y-auto space-y-2.5">
+                <div className="p-3 max-h-[38vh] md:max-h-56 overflow-y-auto space-y-2">
                   <div className="flex items-center justify-between pb-1.5 border-b border-forest/10">
                     <div className="flex items-center gap-1.5 font-semibold text-xs text-forest">
                       <span>🛒</span>
@@ -528,7 +533,7 @@ export function ChatWidget() {
                   </div>
 
                   {/* List of items currently in the bag */}
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     {cart.map((cartItem) => {
                       const p = getProduct(cartItem.id);
                       if (!p) return null;
@@ -539,11 +544,11 @@ export function ChatWidget() {
                           key={cartItem.id}
                           className="flex items-center justify-between gap-2 bg-sand/30 rounded-xl p-2 border border-forest/10"
                         >
-                          <div className="flex items-center gap-2 min-w-0">
+                          <div className="flex items-center gap-2 min-w-0 flex-1">
                             <div className="relative h-10 w-10 rounded-lg bg-white overflow-hidden shrink-0 border border-forest/10">
                               <Image src={p.image} alt={p.name} fill className="object-contain p-0.5" />
                             </div>
-                            <div className="min-w-0">
+                            <div className="min-w-0 flex-1">
                               <p className="text-xs font-medium text-forest truncate">{p.name}</p>
                               <p className="text-[11px] text-muted">
                                 ₹{p.price} × {cartItem.qty} = <strong className="text-forest">₹{subtotal}</strong>
@@ -587,7 +592,7 @@ export function ChatWidget() {
                   {/* Bag Actions & WhatsApp Order */}
                   <div className="pt-2 border-t border-forest/10 flex items-center justify-between gap-2">
                     <div>
-                      <span className="text-[11px] text-muted block">Bag Total</span>
+                      <span className="text-[10px] text-muted block leading-none">Bag Total</span>
                       <span className="text-sm font-bold text-forest">₹{cartTotal}</span>
                     </div>
 
@@ -642,7 +647,7 @@ export function ChatWidget() {
           )}
 
           {/* INPUT FORM */}
-          <div className="bg-white p-3 border-t border-forest/10 shrink-0">
+          <div className="bg-white p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-forest/10 shrink-0">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -655,7 +660,7 @@ export function ChatWidget() {
                 type="text"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask about products, goseva, or order directly..."
+                placeholder="Ask about products, goseva, or order..."
                 disabled={isGenerating}
                 className="flex-1 rounded-full bg-sand/60 px-4 py-2.5 text-xs md:text-sm text-ink placeholder:text-muted/70 focus:outline-none focus:ring-2 focus:ring-leaf/40 border border-forest/10 disabled:opacity-50"
               />
@@ -663,7 +668,7 @@ export function ChatWidget() {
                 type="submit"
                 disabled={!inputValue.trim() || isGenerating}
                 aria-label="Send message"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-forest text-cream transition hover:bg-leaf disabled:opacity-40 active:scale-95 shrink-0"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-forest text-cream transition hover:bg-leaf disabled:opacity-40 active:scale-95 shrink-0 shadow-xs"
               >
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="22" y1="2" x2="11" y2="13" />
@@ -679,10 +684,10 @@ export function ChatWidget() {
                   onClick={() => setIsOpen(false)}
                   className="text-leaf font-medium underline hover:text-forest"
                 >
-                  View Full Cart Page ({cartCount}) →
+                  View Full Cart ({cartCount}) →
                 </Link>
               ) : (
-                <span className="text-leaf">Orders fulfilled via Goshala Team</span>
+                <span className="text-leaf">Orders via Goshala Team</span>
               )}
             </div>
           </div>
