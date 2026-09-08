@@ -165,7 +165,7 @@ export function ChatWidget() {
   return (
     <>
       {/* FLOATING CHAT BUTTON */}
-      <div className="fixed bottom-[9.5rem] right-4 z-50 md:bottom-24 md:right-5 flex flex-col items-end">
+      <div className="fixed bottom-[5.75rem] right-4 z-50 md:bottom-5 md:right-5 flex flex-col items-end">
         {/* Tooltip badge */}
         {!isOpen && showTooltip && (
           <div className="relative mb-2 hidden md:flex items-center gap-2 rounded-2xl bg-forest px-3.5 py-2 text-xs font-medium text-cream shadow-xl border border-lime/30 animate-bounce">
@@ -221,7 +221,7 @@ export function ChatWidget() {
       {isOpen && (
         <div
           data-lenis-prevent
-          className="fixed inset-0 z-[80] md:inset-auto md:bottom-24 md:right-5 md:w-[420px] md:max-w-[calc(100vw-2.5rem)] h-[100dvh] md:h-[620px] md:max-h-[calc(100dvh-7rem)] flex flex-col rounded-none md:rounded-3xl bg-[#fbf9f4] md:border md:border-forest/15 shadow-[0_20px_50px_rgba(22,56,43,0.3)] overflow-hidden overscroll-contain"
+          className="fixed inset-0 z-[80] md:inset-auto md:bottom-5 md:right-5 md:w-[420px] md:max-w-[calc(100vw-2.5rem)] h-[100dvh] md:h-[620px] md:max-h-[calc(100dvh-3rem)] flex flex-col rounded-none md:rounded-3xl bg-[#fbf9f4] md:border md:border-forest/15 shadow-[0_20px_50px_rgba(22,56,43,0.3)] overflow-hidden overscroll-contain"
         >
           {/* HEADER */}
           <div className="flex items-center justify-between bg-forest px-4 py-3.5 text-cream shrink-0 border-b border-forest/20">
@@ -230,14 +230,9 @@ export function ChatWidget() {
                 <Image src="/logo.png" alt="Giridhan" fill className="object-contain p-0.5" />
               </div>
               <div>
-                <div className="flex items-center gap-1.5">
-                  <h3 className="font-serif text-base font-semibold leading-none">
-                    Giridhan AI
-                  </h3>
-                  <span className="rounded-full bg-lime/20 px-1.5 py-0.5 text-[10px] font-medium text-lime">
-                    Groq 20B
-                  </span>
-                </div>
+                <h3 className="font-serif text-base font-semibold leading-none">
+                  Giridhan AI
+                </h3>
                 <div className="mt-1 flex items-center gap-1.5 text-[11px] text-cream/75">
                   <span className="h-1.5 w-1.5 rounded-full bg-lime animate-pulse" />
                   <span>Online • Instant Answers & Orders</span>
@@ -677,7 +672,7 @@ export function ChatWidget() {
               </button>
             </form>
             <div className="mt-2 flex items-center justify-between px-2 text-[10px] text-muted">
-              <span>Giridhan AI · Groq 20B</span>
+              <span>Giridhan AI Assistant</span>
               {cartCount > 0 ? (
                 <Link
                   href="/bag"
