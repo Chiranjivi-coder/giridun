@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, prefersReducedMotion, registerGsap } from "@/lib/gsap";
 
@@ -55,34 +55,92 @@ export function JourneyReel() {
     { scope: root }
   );
 
+  const [activeMobileIndex, setActiveMobileIndex] = useState(0);
+  const mobileTrackRef = useRef<HTMLDivElement>(null);
+
+  const handleMobileScroll = () => {
+    const el = mobileTrackRef.current;
+    if (!el) return;
+    const cardWidth = el.scrollWidth / items.length;
+    const index = Math.round(el.scrollLeft / cardWidth);
+    setActiveMobileIndex(Math.min(items.length - 1, Math.max(0, index)));
+  };
+
+  const scrollToMobileIndex = (index: number) => {
+    const el = mobileTrackRef.current;
+    if (!el) return;
+    const cardWidth = el.scrollWidth / items.length;
+    el.scrollTo({ left: cardWidth * index, behavior: "smooth" });
+    setActiveMobileIndex(index);
+  };
+
   return (
-    <section ref={root} className="relative bg-sand/50">
-      {/* Mobile view (< 768px): Vertical narrative flow */}
-      <div className="block md:hidden px-4 py-14">
-        <div className="mb-8">
-          <p className="text-xs uppercase tracking-[0.28em] text-leaf">Our Journey</p>
-          <h2 data-split="words" className="mt-2 font-serif text-4xl text-forest">
-            2021 → Today
-          </h2>
-          <p className="mt-3 text-sm text-muted">
-            From humble Goseva roots to a growing circular sustainability movement.
-          </p>
+    <section ref={root} className="relative bg-sand/50 overflow-hidden">
+      {/* Mobile view (< 768px): Smooth horizontally scrollable swipeable carousel */}
+      <div className="block md:hidden px-4 py-12">
+        <div className="mb-6 flex items-end justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-[0.28em] text-leaf">Our Journey</p>
+            <h2 data-split="words" className="mt-1 font-serif text-4xl text-forest">
+              2021 → Today
+            </h2>
+            <p className="mt-1.5 text-xs text-muted">
+              From humble Goseva roots to sustainable living.
+            </p>
+          </div>
+          <div className="shrink-0 flex items-center gap-1 text-[11px] font-semibold text-leaf bg-white/80 border border-forest/10 px-2.5 py-1 rounded-full shadow-xs">
+            <span>Swipe</span>
+            <span className="animate-pulse">→</span>
+          </div>
         </div>
-        <div className="space-y-4">
-          {items.map((j) => (
+
+        {/* Scrollable track with snap */}
+        <div
+          ref={mobileTrackRef}
+          onScroll={handleMobileScroll}
+          data-lenis-prevent
+          className="flex gap-4 overflow-x-auto snap-x snap-mandatory pb-4 pt-1 -mx-4 px-4 scrollbar-none touch-pan-x"
+          style={{ WebkitOverflowScrolling: "touch" }}
+        >
+          {items.map((j, idx) => (
             <article
               key={j.year}
-              data-reveal
-              className="rounded-2xl bg-white p-6 shadow-sm border border-forest/5"
+              onClick={() => scrollToMobileIndex(idx)}
+              className={`w-[78vw] max-w-[20rem] shrink-0 snap-start rounded-2xl p-6 shadow-sm border transition-all duration-300 flex flex-col justify-between ${
+                activeMobileIndex === idx
+                  ? "bg-white border-leaf/40 ring-1 ring-leaf/20 scale-[1.01]"
+                  : "bg-white/80 border-forest/5 opacity-90"
+              }`}
             >
-              <div className="flex items-center justify-between">
-                <p className="font-serif text-3xl font-medium text-leaf">{j.year}</p>
-                <span className="text-[11px] font-semibold tracking-wider text-muted/60 uppercase">
-                  {j.phase}
-                </span>
+              <div>
+                <div className="flex items-center justify-between">
+                  <p className="font-serif text-3xl font-medium text-leaf">{j.year}</p>
+                  <span className="text-[11px] font-semibold tracking-wider text-muted/60 uppercase">
+                    {j.phase}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm text-muted leading-relaxed">{j.title}</p>
               </div>
-              <p className="mt-3 text-sm text-muted leading-relaxed">{j.title}</p>
+              <div className="mt-6 flex items-center justify-between text-[11px] text-muted/60 pt-3 border-t border-forest/5">
+                <span>Phase {idx + 1} of {items.length}</span>
+                <span className="text-leaf font-medium">Giridhan Organics</span>
+              </div>
             </article>
+          ))}
+        </div>
+
+        {/* Indicator dots */}
+        <div className="mt-2 flex items-center justify-center gap-1.5">
+          {items.map((_, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => scrollToMobileIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                activeMobileIndex === idx ? "w-6 bg-leaf" : "w-1.5 bg-forest/20 hover:bg-forest/40"
+              }`}
+            />
           ))}
         </div>
       </div>

@@ -227,8 +227,8 @@ export function ChatWidget() {
       {/* CHAT MODAL WINDOW */}
       {isOpen && (
         <div
-          className="fixed inset-0 z-[80] md:inset-auto md:bottom-24 md:right-5 md:w-[420px] md:max-w-[calc(100vw-2.5rem)] flex flex-col rounded-none md:rounded-3xl bg-sand/90 backdrop-blur-xl md:border md:border-forest/15 shadow-[0_20px_50px_rgba(22,56,43,0.25)] overflow-hidden"
-          style={{ height: "100dvh", maxHeight: "min(680px, calc(100dvh - 7rem))" }}
+          data-lenis-prevent
+          className="fixed inset-0 z-[80] md:inset-auto md:bottom-24 md:right-5 md:w-[420px] md:max-w-[calc(100vw-2.5rem)] h-[100dvh] md:h-[620px] md:max-h-[calc(100dvh-7rem)] flex flex-col rounded-none md:rounded-3xl bg-[#fbf9f4] md:border md:border-forest/15 shadow-[0_20px_50px_rgba(22,56,43,0.3)] overflow-hidden overscroll-contain"
         >
           {/* HEADER */}
           <div className="flex items-center justify-between bg-forest px-4 py-3.5 text-cream shrink-0 border-b border-forest/20">
@@ -283,8 +283,12 @@ export function ChatWidget() {
             </div>
           </div>
 
-          {/* QUICK QUERY CHIPS BAR (Always accessible at top) */}
-          <div className="flex items-center gap-2 overflow-x-auto bg-white/70 px-3 py-2 border-b border-forest/10 scrollbar-none shrink-0">
+          {/* QUICK QUERY CHIPS BAR (Horizontally scrollable with data-lenis-prevent) */}
+          <div
+            data-lenis-prevent
+            className="flex items-center gap-2 overflow-x-auto bg-white/85 px-3 py-2 border-b border-forest/10 scrollbar-none shrink-0 touch-pan-x"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             <span className="text-[10px] uppercase font-bold tracking-wider text-muted shrink-0">
               Quick:
             </span>
@@ -294,15 +298,19 @@ export function ChatWidget() {
                 type="button"
                 disabled={isGenerating}
                 onClick={() => handleSendMessage(q.query)}
-                className="shrink-0 rounded-full border border-forest/15 bg-white px-2.5 py-1 text-xs text-forest hover:border-leaf hover:bg-sand/60 transition active:scale-95 disabled:opacity-50"
+                className="shrink-0 rounded-full border border-forest/15 bg-white px-3 py-1 text-xs text-forest hover:border-leaf hover:bg-sand/60 transition active:scale-95 disabled:opacity-50 shadow-2xs"
               >
                 {q.label}
               </button>
             ))}
           </div>
 
-          {/* MESSAGES CONTAINER */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 text-sm leading-relaxed">
+          {/* MESSAGES CONTAINER (Vertically scrollable with data-lenis-prevent) */}
+          <div
+            data-lenis-prevent
+            className="flex-1 overflow-y-auto p-4 space-y-4 text-sm leading-relaxed overscroll-contain touch-pan-y"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
             {messages.map((msg) => {
               const isUser = msg.role === "user";
               const { cleanText, items } = isUser
