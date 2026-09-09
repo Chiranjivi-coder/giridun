@@ -226,7 +226,7 @@ export default function HomePage() {
 
       <section className="py-12 md:py-20 overflow-hidden bg-sand/20 border-y border-forest/10">
         <GoshalaMarquee
-          kicker="Ahimsa Sanctuary Stream"
+          kicker="Goshala Sanctuary Stream"
           title="Experience Giridhan Goshala & Sanctuary"
           subtitle="Real, continuous glimpses of our 75+ indigenous Gir & Sahiwal cows, young calves, and selfless Goseva in Dhawda, Bhokardan."
         />

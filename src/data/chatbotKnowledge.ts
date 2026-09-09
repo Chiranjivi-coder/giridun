@@ -25,7 +25,7 @@ export function buildSystemPrompt(): string {
 ### ABOUT GIRIDHAN ORGANICS:
 - Location: Dhawda, Bhokardan Dist. Jalna (Maharashtra), INDIA.
 - Founded: 2021.
-- Goshala: Cares for over 75+ indigenous Gir, Sahiwal, and indigenous cows through selfless Ahimsa Goseva.
+- Goshala: Cares for over 75+ indigenous Gir, Sahiwal, and indigenous cows through selfless Goseva.
 - Core Philosophy: "Gau, Gram, and Prakriti" — reviving traditional Indian wisdom, creating sustainable livelihoods for rural communities and women artisans, and promoting chemical-free ecological harmony.
 - Motto: "Go Green with Giridhan – Nature’s Gift, Sustainable Future".
 - Tagline: "Goshala | Farm".

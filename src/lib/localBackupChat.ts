@@ -290,7 +290,7 @@ const TOPICS: KnowledgeTopic[] = [
     ],
     generateResponse: () => {
       return {
-        text: `**Namaste! 🙏 Welcome to Giridhan Organics (गिरिधन ऑर्गेनिक्स).**\n\n**Our Roots & Mission:**\n- 📍 **Location**: Dhawda, Bhokardan, Dist. Jalna (Maharashtra), India.\n- 🌿 **Founded**: 2021.\n- 🐄 **Selfless Goseva**: Our sanctuary cares for over 75+ indigenous Gir, Sahiwal, and local cows through lifelong Ahimsa care.\n- 🌸 **Guiding Principle**: *"Gau, Gram, and Prakriti"* — Revitalizing rural livelihoods, empowering village women artisans, and preserving timeless Vedic ecology.\n- 🍃 **Purity Guarantee**: All our products are 100% chemical-free, charcoal-free, and ethically handcrafted.\n\nWould you like to explore our **Puja Essentials**, **Ayurvedic Healthcare**, or **Natural Farming** solutions?`,
+        text: `**Namaste! 🙏 Welcome to Giridhan Organics (गिरिधन ऑर्गेनिक्स).**\n\n**Our Roots & Mission:**\n- 📍 **Location**: Dhawda, Bhokardan, Dist. Jalna (Maharashtra), India.\n- 🌿 **Founded**: 2021.\n- 🐄 **Selfless Goseva**: Our sanctuary cares for over 75+ indigenous Gir, Sahiwal, and local cows through lifelong Goshala care.\n- 🌸 **Guiding Principle**: *"Gau, Gram, and Prakriti"* — Revitalizing rural livelihoods, empowering village women artisans, and preserving timeless Vedic ecology.\n- 🍃 **Purity Guarantee**: All our products are 100% chemical-free, charcoal-free, and ethically handcrafted.\n\nWould you like to explore our **Puja Essentials**, **Ayurvedic Healthcare**, or **Natural Farming** solutions?`,
         productIds: ["ghee-diya", "gomay-dhoop", "dantamanjan", "vermi-compost"],
       };
     },

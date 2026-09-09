@@ -21,7 +21,7 @@ const WELCOME_MESSAGE: ChatMessage = {
   role: "assistant",
   content: `Namaste! 🙏 Welcome to **Giridhan Organics**. 
 
-I am your AI assistant, powered by the complete knowledge of our **Ahimsa Goshala, indigenous cows, and 40+ natural sustainable products**.
+I am your AI assistant, powered by the complete knowledge of our **Goshala, indigenous cows, and 40+ natural sustainable products**.
 
 You can ask me anything about our products, ingredients, or traditional benefits. When I show products, simply tap **"+ Add to Bag"** to select what you want, and **order directly through WhatsApp** from your bag below!`,
   timestamp: Date.now(),

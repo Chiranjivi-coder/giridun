@@ -720,7 +720,7 @@ const CATEGORIES = [
 const GALLERY_ITEMS = [
   { title: 'Herd of Indigenous Cows at Sanctuary', category: 'Goshala', img: '/goshala_images/goshala-herd-indigenous-cows.jpg', desc: 'Over 75+ indigenous Gir and Sahiwal cows thriving in our open, loving sanctuary in Dhawda, Bhokardan.' },
   { title: 'Serene Sahiwal Cow in Golden Sunlight', category: 'Indigenous Cows', img: '/goshala_images/goshala-sahiwal-cow-morning.jpg', desc: 'A pure indigenous cow enjoying the peaceful open atmosphere and golden morning sunshine.' },
-  { title: 'Maternal Love & Gentle Ahimsa Care', category: 'Indigenous Cows', img: '/goshala_images/goshala-mother-cow-and-calf.jpg', desc: 'Unconditional maternal bond in our Ahimsa sanctuary where calves stay close to their mothers.' },
+  { title: 'Maternal Love & Gentle Goshala Care', category: 'Indigenous Cows', img: '/goshala_images/goshala-mother-cow-and-calf.jpg', desc: 'Unconditional maternal bond in our Goshala sanctuary where calves stay close to their mothers.' },
   { title: 'Young Gir Calf with Sacred Tilak', category: 'Indigenous Cows', img: '/goshala_images/goshala-young-gir-calf-portrait.jpg', desc: 'Every newborn calf is blessed and nurtured with traditional Ayurvedic and holistic care.' },
   { title: 'Fresh Clean Water & Pure Nutrition', category: 'Goshala', img: '/goshala_images/goshala-cow-drinking-pure-water.jpg', desc: 'Continuous access to natural clean drinking water and sun-cured green fodder.' },
   { title: 'Natural Organic Mineral Salt Nutrition', category: 'Goshala', img: '/goshala_images/goshala-calf-mineral-care.jpg', desc: 'Essential trace minerals provided free-choice to support strong immunity and healthy development.' },
@@ -729,7 +729,7 @@ const GALLERY_ITEMS = [
   { title: 'Sunlit Open Paddock Sanctuary', category: 'Indigenous Cows', img: '/goshala_images/goshala-cows-sunlit-paddock.jpg', desc: 'Natural earthen soil flooring that keeps cows grounded and preserves their hoof health.' },
   { title: 'Gau Seva Sanctuary Panorama', category: 'Goshala', img: '/goshala_images/goshala-peaceful-cows-sunlight.jpg', desc: 'Living harmony between Gau, Gram, and Prakriti in the rural heartland of Jalna, Maharashtra.' },
   { title: 'Indigenous Desi Cows at Sanctuary', category: 'Indigenous Cows', img: 'hea1.jpeg', desc: 'Loving care and natural green fodder for 75+ Gir & Sahiwal cows.' },
-  { title: 'Ahimsa Goshala Daily Seva', category: 'Goshala', img: 'hea2.jpeg', desc: 'Our tranquil spiritual sanctuary in Dhawda, Bhokardan.' },
+  { title: 'Goshala Daily Seva', category: 'Goshala', img: 'hea2.jpeg', desc: 'Our tranquil spiritual sanctuary in Dhawda, Bhokardan.' },
   { title: 'Handcrafting Pure Gomay Artifacts', category: 'Product Making', img: 'hea3.jpeg', desc: 'Sun-curing and molding sacred geometry with zero chemicals.' },
   { title: 'Artisanal Rural Women Empowerment', category: 'Women Artisans', img: 'hea4.jpeg', desc: 'Generating dignified livelihoods for rural women artisans.' },
   { title: 'Zero Charcoal Dhoop Preparation', category: 'Product Making', img: 'page_3_img_1.jpeg', desc: 'Blending camphor, guggal, and loban resins by hand.' },
@@ -2000,7 +2000,7 @@ _Submitted via Giridhan Website Contact Page._`;
               breadcrumb="About Us"
               tag="Heritage & Foundation Since 2021"
               subtitle="An initiative rooted in Goseva, sustainable living and rural empowerment. We transform naturally sourced cow-based materials into thoughtfully crafted products that connect Indian heritage with modern sustainable lifestyles."
-              stats={['Established 2021', '75+ Indigenous Gir & Sahiwal Cows', '100% Ahimsa Ethic', 'Bhokardan, Jalna Sanctuary']}
+              stats={['Established 2021', '75+ Indigenous Gir & Sahiwal Cows', 'Pure Goshala Ethic', 'Bhokardan, Jalna Sanctuary']}
               icon={Heart}
               navigateToPage={navigateToPage}
               actionBtn={
@@ -2155,7 +2155,7 @@ _Submitted via Giridhan Website Contact Page._`;
                         75+ Rescued Desi Cows Cared
                       </span>
                       <span className="text-xs font-bold text-stone-800 bg-white px-3.5 py-1.5 rounded-full border border-amber-300 shadow-sm">
-                        100% Ahimsa Ethic
+                        Pure Goshala Ethic
                       </span>
                       <span className="text-xs font-bold text-stone-800 bg-white px-3.5 py-1.5 rounded-full border border-amber-300 shadow-sm">
                         Non-Exploitative Care

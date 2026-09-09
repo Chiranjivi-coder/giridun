@@ -15,7 +15,7 @@ export function GoshalaGallery({
   initialLimit,
   showFilters = true,
   title = "Goshala Sanctuary & Indigenous Cows",
-  subtitle = "Witness the peaceful life, loving Ahimsa care, and pure heritage of our 75+ Gir & Sahiwal cows in Bhokardan, Jalna.",
+  subtitle = "Witness the peaceful life, loving care, and pure heritage of our 75+ Gir & Sahiwal cows in Bhokardan, Jalna.",
 }: GoshalaGalleryProps) {
   const [selectedCategory, setSelectedCategory] = useState<GalleryCategory>("All");
   const [activeModalItem, setActiveModalItem] = useState<GalleryItem | null>(null);
