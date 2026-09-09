@@ -241,10 +241,23 @@ export function extractActionsFromText(text: string): {
     }
   }
 
-  // Remove the tags from the user-facing text
+  // Remove the tags and any accompanying <br>, "Tag:", backticks, or code remnants
   const cleanText = text
-    .replace(/\[ORDER:[a-z0-9-]+(?::\d+)?\]/gi, "")
-    .replace(/\[PRODUCT:[a-z0-9-]+\]/gi, "")
+    // Matches optional <br>, optional spaces, optional "Tag:", optional backtick, the tag, optional backtick
+    .replace(
+      /(?:<br\s*\/?>)?\s*(?:(?:product|order)?\s*(?:tag|code|id)s?:\s*)?`?\[(?:ORDER|PRODUCT):[a-z0-9-]+(?::\d+)?\]`?/gi,
+      ""
+    )
+    // Clean any dangling tag prefixes or leftover empty backticks: e.g. `<br>Tag: `` `, `Tag: `, ` `` `
+    .replace(/(?:<br\s*\/?>)?\s*(?:(?:product|order)?\s*(?:tag|code|id)s?:\s*)`{0,2}\s*`{0,2}/gi, (m) =>
+      /(?:tag|code|id)/i.test(m) ? "" : m
+    )
+    // Remove isolated empty backticks `` or ` `
+    .replace(/`\s*`/g, "")
+    // Remove any trailing or orphan <br> or <br/> tags before table delimiters, newlines, or end of text
+    .replace(/<br\s*\/?>\s*(?=[|\n\r]|$)/gi, "")
+    // Clean any remaining standalone <br> or <br/> tags so raw code never renders on screen
+    .replace(/<br\s*\/?>/gi, " ")
     .trim();
 
   return { cleanText, items };

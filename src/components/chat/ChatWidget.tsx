@@ -15,6 +15,7 @@ import {
 import { streamLocalBackupResponse } from "@/lib/localBackupChat";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 const WELCOME_MESSAGE: ChatMessage = {
   id: "welcome-msg",
@@ -369,7 +370,9 @@ export function ChatWidget() {
                       <div className="break-words leading-relaxed">
                         <ReactMarkdown
                           remarkPlugins={[remarkGfm]}
+                          rehypePlugins={[rehypeRaw]}
                           components={{
+                            br: () => <br className="my-0.5" />,
                             p: ({ children }) => (
                               <p className="mb-2 last:mb-0 leading-relaxed text-sm">{children}</p>
                             ),
